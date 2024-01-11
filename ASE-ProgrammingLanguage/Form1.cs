@@ -8,17 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace ASE_ProgrammingLanguage
 {
     public partial class Form1 : Form
     {
         Bitmap DrawingBitmap = new Bitmap(451, 375);
         Drawer drawer;
+        CommandParser cmdParser;
         String cmdWindowTxt, cmdLineTxt;
         public Form1()
         {
             InitializeComponent();
             drawer = new Drawer(Graphics.FromImage(DrawingBitmap));
+            cmdParser = new CommandParser(drawer);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -120,7 +123,7 @@ namespace ASE_ProgrammingLanguage
 
         private void buttonOpen_Click(object sender, EventArgs e)
         {
-
+            Console.WriteLine(cmdParser.OpenFile());
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
