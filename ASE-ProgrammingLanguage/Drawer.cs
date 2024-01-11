@@ -113,7 +113,10 @@ namespace ASE_ProgrammingLanguage
         {
             pen.Color = colour;
         }
-
+        /// <summary>
+        /// Sets the colour of the brush
+        /// </summary>
+        /// <param name="colour">The colour of the brush</param>
         public void SetBrushColour(Color colour)
         {
             brush = new SolidBrush(colour);
