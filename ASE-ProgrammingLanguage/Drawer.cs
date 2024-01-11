@@ -121,7 +121,9 @@ namespace ASE_ProgrammingLanguage
         {
             brush = new SolidBrush(colour);
         }
-
+        /// <summary>
+        /// Enables fill
+        /// </summary>
         public void EnableFill()
         {
             pen.Brush = brush;
