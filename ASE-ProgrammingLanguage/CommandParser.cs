@@ -8,11 +8,18 @@ using System.Windows.Forms; //forms as i decided to use windows file manager to 
 
 namespace ASE_ProgrammingLanguage
 {
+    /// <summary>
+    /// Provides functionality for parsing commands and includes opening and saving files.
+    /// </summary>
     internal class CommandParser 
     {
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;  
+        /// <summary>
+        /// Initialises new instance of <see cref="CommandParser"/> class
+        /// </summary>
+        /// <param name="drawer"> drawer used by command parser to allow executing drawer commands within class</param>
         public CommandParser(Drawer drawer) 
         { 
             this.drawer = drawer;
@@ -31,7 +38,10 @@ namespace ASE_ProgrammingLanguage
 
 
         }
-
+        /// <summary>
+        /// Uses file dialog to open files
+        /// </summary>
+        /// <returns>The content of an opened file or null if an error happens </returns>
         public string OpenFile()
         {
             {
@@ -51,7 +61,10 @@ namespace ASE_ProgrammingLanguage
             }
             return null;
         }
-
+        /// <summary>
+        /// Saves provided program to a file
+        /// </summary>
+        /// <param name="program"> string to be saved </param>
         public void SaveFile(String program)
         {
             try
