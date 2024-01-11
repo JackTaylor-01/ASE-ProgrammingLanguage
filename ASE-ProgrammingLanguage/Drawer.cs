@@ -38,7 +38,11 @@ namespace ASE_ProgrammingLanguage
         {
             g.DrawLine(pen, xPos, yPos, toX, toY);
         }
-        //
+        /// <summary>
+        /// Moves the pen to specified vector, allowing functions in drawer class to paint anywhere on the picturebox
+        /// </summary>
+        /// <param name="x"> Horizontal compoenent of the vector for the pens new location</param>
+        /// <param name="y"> Vertical component of the vector for the pens new location</param>
         public void MoveTo(int x, int y)
         {
             xPos = x;
