@@ -76,11 +76,11 @@ namespace ASE_ProgrammingLanguage
                     drawer.DrawTriangle(50);
                     break;
 
-                case "SetPenColor":
+                case "SetPenColour":
                     drawer.SetPenColour(Color.Red);
                     break;
 
-                case "SetBrushColor":
+                case "SetBrushColour":
                     drawer.SetBrushColour(Color.Blue);
                     break;
 

@@ -7,6 +7,9 @@ using System.Drawing;
 
 namespace ASE_ProgrammingLanguage
 {
+    /// <summary>
+    /// Class is used for drawing lines and shapes on a picture box
+    /// </summary>
     internal class Drawer
     {
         Graphics g;
@@ -14,6 +17,10 @@ namespace ASE_ProgrammingLanguage
         int xPos, yPos;
         Brush brush;
 
+        /// <summary>
+        /// Initialises <see cref="Drawer"/> class
+        /// </summary>
+        /// <param name="g"> where everything is drawn </param>
         public Drawer(Graphics g)
         {
             this.g = g;
@@ -21,11 +28,6 @@ namespace ASE_ProgrammingLanguage
             xPos = yPos = 0;
             brush = Brushes.Black;
 
-        }
-
-        public Graphics GetG()
-        {
-            return g;
         }
 
         public void DrawLine(int toX, int toY)
