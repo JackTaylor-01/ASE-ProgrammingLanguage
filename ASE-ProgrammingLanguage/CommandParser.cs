@@ -5,6 +5,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms; //forms as i decided to use windows file manager to select text files (wasn't specified in spec)
+using System.Text.RegularExpressions; //using regular expressions to parse commands
 
 namespace ASE_ProgrammingLanguage
 {
@@ -80,6 +81,41 @@ namespace ASE_ProgrammingLanguage
                 Console.WriteLine($"Error saving the file: {ex.Message}");
             }
            
+        }
+        /// <summary>
+        /// Parses commands
+        /// </summary>
+        /// <param name="cmdString"> String of command(s) to parse</param>
+        public void ParseCommands(String cmdString)
+        {
+            // Define a regular expression pattern to match commands and their optional arguments
+            string pattern = @"(\w+)(?:\(([^)]*)\))?";
+
+            // Use Regex.Matches to find all matches in the input string
+            MatchCollection matches = Regex.Matches(cmdString, pattern);
+
+            foreach (Match match in matches)
+            {
+                // Extract command and arguments
+                string command = match.Groups[1].Value;
+
+                // Check if arguments are present
+                string[] arguments = match.Groups[2].Success ? match.Groups[2].Value.Split(',') : new string[0];
+
+                // Trim whitespaces from each argument
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    arguments[i] = arguments[i].Trim();
+                }
+
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    Console.WriteLine($"Argument {i + 1}: {arguments[i]}");
+                    //ExecuteCommand(ArgumentException[i]);
+                }
+
+            }
+
         }
 
 

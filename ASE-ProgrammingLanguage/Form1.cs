@@ -46,6 +46,7 @@ namespace ASE_ProgrammingLanguage
             MessageBox.Show("cmdLineTxt = " + cmdLineTxt);
             drawOutput.Invalidate(); //invalidate needed as form needs repainting
             //Following switch case used for testing Drawer class functionality
+            cmdParser.ParseCommands(cmdLineTxt);
 
             switch (cmdLineTxt)
             {
