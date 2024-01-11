@@ -91,7 +91,10 @@ namespace ASE_ProgrammingLanguage
         {
             g.DrawEllipse(pen, xPos - radius, yPos - radius, radius * 2, radius * 2);
         }
-
+        /// <summary>
+        /// Draws triangle 
+        /// </summary>
+        /// <param name="sideLength"> Length of the sides of the triangle</param>
         public void DrawTriangle(int sideLength)
         {
             Point[] trianglePoints = {
