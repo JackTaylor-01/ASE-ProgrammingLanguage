@@ -29,12 +29,16 @@ namespace ASE_ProgrammingLanguage
             brush = Brushes.Black;
 
         }
-
+        /// <summary>
+        /// Draws line on the picturebox using the pen between 2 vectors.
+        /// </summary>
+        /// <param name="toX"> The horizontal componenet of the vector where the line is being drawn to</param>
+        /// <param name="toY"> The vertical component of the vector where the line is being drawn to</param>
         public void DrawLine(int toX, int toY)
         {
             g.DrawLine(pen, xPos, yPos, toX, toY);
         }
-
+        //
         public void MoveTo(int x, int y)
         {
             xPos = x;
