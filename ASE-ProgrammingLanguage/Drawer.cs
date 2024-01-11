@@ -128,7 +128,9 @@ namespace ASE_ProgrammingLanguage
         {
             pen.Brush = brush;
         }
-
+        /// <summary>
+        /// Disables fill
+        /// </summary>
         public void DisableFill()
         {
             pen.Brush = null;
