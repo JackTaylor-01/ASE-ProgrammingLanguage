@@ -123,12 +123,12 @@ namespace ASE_ProgrammingLanguage
 
         private void buttonOpen_Click(object sender, EventArgs e)
         {
-            Console.WriteLine(cmdParser.OpenFile());
+            cmdWindow.Text = cmdParser.OpenFile();
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
-
+            cmdParser.SaveFile(cmdWindowTxt);
         }
 
 
