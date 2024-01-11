@@ -74,7 +74,11 @@ namespace ASE_ProgrammingLanguage
         {
             xPos = yPos = 0;
         }
-
+        /// <summary>
+        /// Draws rectangle at pen location
+        /// </summary>
+        /// <param name="width"> is the width of the rectangle</param>
+        /// <param name="height"> is the height of the rectangle</param>
         public void DrawRectangle(int width, int height)
         {
             g.DrawRectangle(pen, xPos, yPos, width, height);
