@@ -67,7 +67,9 @@ namespace ASE_ProgrammingLanguage
         {
             g.Clear(Color.WhiteSmoke);
         }
-
+        /// <summary>
+        /// Resets the pens vector to 0,0
+        /// </summary>
         public void Reset()
         {
             xPos = yPos = 0;
