@@ -49,6 +49,11 @@ namespace ASE_ProgrammingLanguage
             yPos = y;
         }
 
+        /// <summary>
+        /// Draws line on the picture box using the pen between 2 vectors and set the pen to vector that was drawn to
+        /// </summary>
+        /// <param name="toX"> Horizontal componenet of the vector for the pens new location</param>
+        /// <param name="toY"> Vertical component of the vector for the pens new location</param>
         public void DrawTo(int toX, int toY)
         {
             g.DrawLine(pen, xPos, yPos, toX, toY);
