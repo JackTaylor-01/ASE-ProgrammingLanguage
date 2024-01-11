@@ -60,7 +60,9 @@ namespace ASE_ProgrammingLanguage
             xPos = toX;
             yPos = toY;
         }
-
+        /// <summary>
+        /// Clears the picturebox of all drawings setting the background to 'WhiteSmoke'
+        /// </summary>
         public void Clear()
         {
             g.Clear(Color.WhiteSmoke);
