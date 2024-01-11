@@ -83,7 +83,10 @@ namespace ASE_ProgrammingLanguage
         {
             g.DrawRectangle(pen, xPos, yPos, width, height);
         }
-
+        /// <summary>
+        /// Draws circle around the pen. With the pen location being the centre of the circle
+        /// </summary>
+        /// <param name="radius"> Radius of the circle</param>
         public void DrawCircle(int radius)
         {
             g.DrawEllipse(pen, xPos - radius, yPos - radius, radius * 2, radius * 2);
