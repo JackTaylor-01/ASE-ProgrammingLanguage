@@ -97,18 +97,20 @@
             // 
             // drawOutput
             // 
-            this.drawOutput.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.drawOutput.BackColor = System.Drawing.Color.WhiteSmoke;
             this.drawOutput.Location = new System.Drawing.Point(325, 34);
             this.drawOutput.Name = "drawOutput";
             this.drawOutput.Size = new System.Drawing.Size(451, 375);
             this.drawOutput.TabIndex = 6;
             this.drawOutput.TabStop = false;
             this.drawOutput.Click += new System.EventHandler(this.drawOutput_Click);
+            this.drawOutput.Paint += new System.Windows.Forms.PaintEventHandler(this.drawOutput_Paint);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.GrayText;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.drawOutput);
             this.Controls.Add(this.buttonSave);
@@ -117,6 +119,7 @@
             this.Controls.Add(this.buttonRun);
             this.Controls.Add(this.cmdLine);
             this.Controls.Add(this.cmdWindow);
+            this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Form1";
             this.Text = "ASE-Programming Language";
