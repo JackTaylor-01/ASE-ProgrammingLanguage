@@ -39,14 +39,16 @@ namespace ASE_ProgrammingLanguage
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("cmdWindowTxt = " + cmdWindowTxt);
             MessageBox.Show("cmdLineTxt = " + cmdLineTxt);
             drawOutput.Invalidate(); //invalidate needed as form needs repainting
             //Following switch case used for testing Drawer class functionality
+
             switch (cmdLineTxt)
             {
                 case "DrawLine":
-                    drawer.DrawLine(160, 120);
+                    new CommandParser(drawer);
+                    //drawer.DrawLine(160, 120);
                     break;
                 case "MoveTo":
                     drawer.MoveTo(50, 50);
