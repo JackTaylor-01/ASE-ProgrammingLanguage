@@ -105,7 +105,10 @@ namespace ASE_ProgrammingLanguage
 
             g.DrawPolygon(pen, trianglePoints);
         }
-
+        /// <summary>
+        /// Sets the colour of the pen
+        /// </summary>
+        /// <param name="colour"> The colour of the pen</param>
         public void SetPenColour(Color colour)
         {
             pen.Color = colour;
