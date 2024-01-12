@@ -44,13 +44,13 @@ namespace ASE_ProgrammingLanguage
         {
 
             drawOutput.Invalidate(); //invalidate needed as form needs repainting
-            if (cmdLineTxt != "run")
+            if (cmdLineTxt != "run" && !string.IsNullOrWhiteSpace(cmdLineTxt))
             {
                 cmdParser.ParseCommands(cmdLineTxt);
             }
-            else if(cmdLineTxt != null)
+            else 
             {
-                cmdParser.ParseCommands(cmdWindowTxt);
+                //throw exception
             }
            
         }
