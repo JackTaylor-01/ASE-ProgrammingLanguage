@@ -42,66 +42,17 @@ namespace ASE_ProgrammingLanguage
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("cmdWindowTxt = " + cmdWindowTxt);
-            MessageBox.Show("cmdLineTxt = " + cmdLineTxt);
+
             drawOutput.Invalidate(); //invalidate needed as form needs repainting
-            //Following switch case used for testing Drawer class functionality
-            cmdParser.ParseCommands(cmdLineTxt);
-
-            switch (cmdLineTxt)
+            if (cmdLineTxt != "run")
             {
-                case "DrawLine":
-                    new CommandParser(drawer);
-                    //drawer.DrawLine(160, 120);
-                    break;
-                case "MoveTo":
-                    drawer.MoveTo(50, 50);
-                    break;
-
-                case "DrawTo":
-                    drawer.DrawTo(200, 200);
-                    break;
-
-                case "Clear":
-                    drawer.Clear();
-                    break;
-
-                case "Reset":
-                    drawer.Reset();
-                    break;
-
-                case "DrawRectangle":
-                    drawer.DrawRectangle(30, 40);
-                    break;
-
-                case "DrawCircle":
-                    drawer.DrawCircle(25);
-                    break;
-
-                case "DrawTriangle":
-                    drawer.DrawTriangle(50);
-                    break;
-
-                case "SetPenColour":
-                    drawer.SetPenColour(Color.Red);
-                    break;
-
-                case "SetBrushColour":
-                    drawer.SetBrushColour(Color.Blue);
-                    break;
-
-                case "EnableFill":
-                    drawer.EnableFill();
-                    break;
-
-                case "DisableFill":
-                    drawer.DisableFill();
-                    break;
-
-                default:
-                    Console.WriteLine($"Unknown command: {cmdLineTxt}");
-                    break;
+                cmdParser.ParseCommands(cmdLineTxt);
             }
+            else if(cmdLineTxt != null)
+            {
+                cmdParser.ParseCommands(cmdWindowTxt);
+            }
+           
         }
 
         private void buttonSyntax_Click(object sender, EventArgs e)

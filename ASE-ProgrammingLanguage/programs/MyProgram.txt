@@ -1,0 +1,6 @@
+DrawLine(100,300)
+MoveTo(100,300)
+DrawCircle(100)
+MoveTo(200,400)
+SetBrushColour(red)
+DrawTriangle(60)
