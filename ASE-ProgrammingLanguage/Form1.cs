@@ -51,6 +51,7 @@ namespace ASE_ProgrammingLanguage
             else 
             {
                 //throw exception
+                new OtherException("Please enter commands into command line before running");
             }
            
         }
