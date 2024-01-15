@@ -236,10 +236,7 @@ namespace ASE_ProgrammingLanguage
 
                     parsedCommands.Add(new Command(name, arguments));
                 }
-                else
-                {
-                    new OtherException("invalid command or arguments");
-                }
+
             }
 
             commands = parsedCommands;
