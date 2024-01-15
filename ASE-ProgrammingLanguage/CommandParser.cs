@@ -18,7 +18,6 @@ namespace ASE_ProgrammingLanguage
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
-        OtherException otherException;
       
         public CommandParser(Drawer drawer)
         {
@@ -57,7 +56,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 catch (Exception ex)
                 {
-                    otherException = new OtherException("Error opening file");
+                    new OtherException("Error opening file");
                 }
             }
             return null;
@@ -78,7 +77,7 @@ namespace ASE_ProgrammingLanguage
             }
             catch (Exception ex)
             {
-                otherException = new OtherException("Error saving file");
+                new OtherException("Error saving file");
             }
 
         }
@@ -96,6 +95,11 @@ namespace ASE_ProgrammingLanguage
                         {
                             drawer.DrawLine((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
+                        }
+                        
                         break;
 
                     case "moveto":
@@ -103,12 +107,20 @@ namespace ASE_ProgrammingLanguage
                         {
                             drawer.MoveTo((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
+                        }
                         break;
 
                     case "drawto":
                         if (command.Arguments.Count == 2 && command.Arguments[0] is int && command.Arguments[1] is int)
                         {
                             drawer.DrawTo((int)command.Arguments[0], (int)command.Arguments[1]);
+                        }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
                         }
                         break;
 
@@ -125,12 +137,20 @@ namespace ASE_ProgrammingLanguage
                         {
                             drawer.DrawRectangle((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
+                        }
                         break;
 
                     case "drawcircle":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is int)
                         {
                             drawer.DrawCircle((int)command.Arguments[0]);
+                        }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
                         }
                         break;
 
@@ -139,6 +159,10 @@ namespace ASE_ProgrammingLanguage
                         {
                             drawer.DrawTriangle((int)command.Arguments[0]);
                         }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
+                        }
                         break;
 
                     case "setpencolour":
@@ -146,12 +170,20 @@ namespace ASE_ProgrammingLanguage
                         {
                             drawer.SetPenColour((String)command.Arguments[0]);
                         }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
+                        }
                         break;
 
                     case "setbrushcolour":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is String)
                         {
                             drawer.SetBrushColour((String)command.Arguments[0]);
+                        }
+                        else
+                        {
+                            new OtherException("invalid argument(s)");
                         }
                         break;
 
@@ -164,7 +196,7 @@ namespace ASE_ProgrammingLanguage
                         break;
 
                     default:
-                        otherException = new OtherException(command + " is not a valid command");
+                        new OtherException(command + " is not a valid command");
                         break;
                 }
 
@@ -206,7 +238,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 else
                 {
-                    otherException = new OtherException("invalid command");
+                    new OtherException("invalid command or arguments");
                 }
             }
 
