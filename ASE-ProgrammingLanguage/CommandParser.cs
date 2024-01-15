@@ -18,7 +18,7 @@ namespace ASE_ProgrammingLanguage
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
-
+        OtherException otherException;
       
         public CommandParser(Drawer drawer)
         {
@@ -89,82 +89,82 @@ namespace ASE_ProgrammingLanguage
         {
             foreach (Command command in commands)
             {
-                switch (command.Name)
+                switch (command.Name.ToLower()) //to lower so commands arent cast sensative
                 {
-                    case "DrawLine":
+                    case "drawline":
                         if (command.Arguments.Count == 2 && command.Arguments[0] is int && command.Arguments[1] is int)
                         {
                             drawer.DrawLine((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
                         break;
 
-                    case "MoveTo":
+                    case "moveto":
                         if (command.Arguments.Count == 2 && command.Arguments[0] is int && command.Arguments[1] is int)
                         {
                             drawer.MoveTo((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
                         break;
 
-                    case "DrawTo":
+                    case "drawto":
                         if (command.Arguments.Count == 2 && command.Arguments[0] is int && command.Arguments[1] is int)
                         {
                             drawer.DrawTo((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
                         break;
 
-                    case "Clear":
+                    case "clear":
                         drawer.Clear();
                         break;
 
-                    case "Reset":
+                    case "reset":
                         drawer.Reset();
                         break;
 
-                    case "DrawRectangle":
+                    case "drawrectangle":
                         if (command.Arguments.Count == 2 && command.Arguments[0] is int && command.Arguments[1] is int)
                         {
                             drawer.DrawRectangle((int)command.Arguments[0], (int)command.Arguments[1]);
                         }
                         break;
 
-                    case "DrawCircle":
+                    case "drawcircle":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is int)
                         {
                             drawer.DrawCircle((int)command.Arguments[0]);
                         }
                         break;
 
-                    case "DrawTriangle":
+                    case "drawtriangle":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is int)
                         {
                             drawer.DrawTriangle((int)command.Arguments[0]);
                         }
                         break;
 
-                    case "SetPenColour":
+                    case "setpencolour":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is String)
                         {
                             drawer.SetPenColour((String)command.Arguments[0]);
                         }
                         break;
 
-                    case "SetBrushColour":
+                    case "setbrushcolour":
                         if (command.Arguments.Count == 1 && command.Arguments[0] is String)
                         {
                             drawer.SetBrushColour((String)command.Arguments[0]);
                         }
                         break;
 
-                    case "EnableFill":
+                    case "enablefill":
                         drawer.EnableFill();
                         break;
 
-                    case "DisableFill":
+                    case "disablefill":
                         drawer.DisableFill();
                         break;
 
                     default:
-                        Console.WriteLine($"Unknown command: {command}");
+                        otherException = new OtherException(command + " is not a valid command");
                         break;
                 }
 
