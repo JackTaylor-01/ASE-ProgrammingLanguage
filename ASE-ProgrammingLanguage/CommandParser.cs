@@ -142,16 +142,16 @@ namespace ASE_ProgrammingLanguage
                         break;
 
                     case "SetPenColour":
-                        if (command.Arguments.Count == 1 && command.Arguments[0] is Color)
+                        if (command.Arguments.Count == 1 && command.Arguments[0] is String)
                         {
-                            drawer.SetPenColour((Color)command.Arguments[0]);
+                            drawer.SetPenColour((String)command.Arguments[0]);
                         }
                         break;
 
                     case "SetBrushColour":
-                        if (command.Arguments.Count == 1 && command.Arguments[0] is Color)
+                        if (command.Arguments.Count == 1 && command.Arguments[0] is String)
                         {
-                            drawer.SetBrushColour((Color)command.Arguments[0]);
+                            drawer.SetBrushColour((String)command.Arguments[0]);
                         }
                         break;
 

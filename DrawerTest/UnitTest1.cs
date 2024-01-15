@@ -88,7 +88,9 @@ namespace DrawerTest
             catch (Exception ex)
             {
                 Assert.Fail($"Unexpected exception thrown: {ex.Message}");
+            }
         }
+
         /// <summary>
         /// Tests DrawCircle method with valid arguments
         /// </summary>
@@ -102,7 +104,9 @@ namespace DrawerTest
             catch (Exception ex)
             {
                 Assert.Fail($"Unexpected exception thrown: {ex.Message}");
+            }
         }
+
         /// <summary>
         /// Tests DrawTriangle method with valid arguments
         /// </summary>
@@ -116,6 +120,7 @@ namespace DrawerTest
             catch (Exception ex)
             {
                 Assert.Fail($"Unexpected exception thrown: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -124,9 +129,10 @@ namespace DrawerTest
         [TestMethod]
         public void SetPenColour_ValidColour_ShouldSetPenColour()
         {
-            drawer.SetPenColour(Color.Blue);
+            drawer.SetPenColour("Blue");
             Assert.AreEqual(Color.Blue, drawer.pen.Color);
         }
+
         /// <summary>
         /// Tests Enablefill method
         /// </summary>
@@ -135,6 +141,7 @@ namespace DrawerTest
         {
             drawer.EnableFill();
         }
+
         /// <summary>
         /// Tests DisableFill method
         /// </summary>
@@ -143,5 +150,6 @@ namespace DrawerTest
         {
             drawer.DisableFill();
         }
+
     }
 }

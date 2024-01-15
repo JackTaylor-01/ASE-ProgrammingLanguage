@@ -16,7 +16,7 @@ namespace ASE_ProgrammingLanguage
         public Pen pen;
         public int xPos, yPos;
         Brush brush;
-        
+        public bool fill = false;
         /// <summary>
         /// Initialises <see cref="Drawer"/> class
         /// </summary>
@@ -81,7 +81,15 @@ namespace ASE_ProgrammingLanguage
         /// <param name="height"> is the height of the rectangle</param>
         public void DrawRectangle(int width, int height)
         {
-            g.DrawRectangle(pen, xPos, yPos, width, height);
+            if (fill)
+            {
+                g.FillRectangle(brush, xPos, yPos, width, height);
+            }
+            else
+            {
+                g.DrawRectangle(pen, xPos, yPos, width, height);
+            }
+
         }
         /// <summary>
         /// Draws circle around the pen. With the pen location being the centre of the circle
@@ -89,7 +97,14 @@ namespace ASE_ProgrammingLanguage
         /// <param name="radius"> Radius of the circle</param>
         public void DrawCircle(int radius)
         {
-            g.DrawEllipse(pen, xPos - radius, yPos - radius, radius * 2, radius * 2);
+            if (fill)
+            {
+                g.FillEllipse(brush, xPos - radius, yPos - radius, radius * 2, radius * 2);
+            }
+            else
+            {
+                g.DrawEllipse(pen, xPos - radius, yPos - radius, radius * 2, radius * 2);
+            }
         }
         /// <summary>
         /// Draws triangle 
@@ -103,29 +118,37 @@ namespace ASE_ProgrammingLanguage
                 new Point(xPos + sideLength / 2, yPos + sideLength / 2)
             };
 
-            g.DrawPolygon(pen, trianglePoints);
+            if (fill)
+            {
+                g.FillPolygon(brush, trianglePoints);
+            }
+            else
+            {
+                g.DrawPolygon(pen, trianglePoints);
+            }
         }
         /// <summary>
         /// Sets the colour of the pen
         /// </summary>
         /// <param name="colour"> The colour of the pen</param>
-        public void SetPenColour(Color colour)
+        public void SetPenColour(String colour)
         {
-            pen.Color = colour;
+            pen.Color = Color.FromName(colour);
         }
         /// <summary>
         /// Sets the colour of the brush
         /// </summary>
         /// <param name="colour">The colour of the brush</param>
-        public void SetBrushColour(Color colour)
+        public void SetBrushColour(String colour)
         {
-            brush = new SolidBrush(colour);
+            brush = new SolidBrush(Color.FromName(colour));
         }
         /// <summary>
         /// Enables fill
         /// </summary>
         public void EnableFill()
         {
+            fill = true;
             pen.Brush = brush;
         }
         /// <summary>
@@ -133,6 +156,7 @@ namespace ASE_ProgrammingLanguage
         /// </summary>
         public void DisableFill()
         {
+            fill = false;
             pen.Brush = Brushes.Transparent;
         }
 
