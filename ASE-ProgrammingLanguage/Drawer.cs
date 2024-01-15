@@ -157,7 +157,7 @@ namespace ASE_ProgrammingLanguage
         public void DisableFill()
         {
             fill = false;
-            pen.Brush = Brushes.Transparent;
+            //pen.Brush = Brushes.Transparent;
         }
 
 
