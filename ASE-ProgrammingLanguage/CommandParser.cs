@@ -57,7 +57,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error reading the file: {ex.Message}");
+                    otherException = new OtherException("Error opening file");
                 }
             }
             return null;
@@ -78,7 +78,7 @@ namespace ASE_ProgrammingLanguage
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving the file: {ex.Message}");
+                otherException = new OtherException("Error saving file");
             }
 
         }
@@ -203,6 +203,10 @@ namespace ASE_ProgrammingLanguage
                     }
 
                     parsedCommands.Add(new Command(name, arguments));
+                }
+                else
+                {
+                    otherException = new OtherException("invalid command");
                 }
             }
 
