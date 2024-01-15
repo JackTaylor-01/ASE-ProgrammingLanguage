@@ -10,13 +10,13 @@ namespace ASE_ProgrammingLanguage
     /// <summary>
     /// Class is used for drawing lines and shapes on a picture box
     /// </summary>
-    internal class Drawer
+    public class Drawer
     {
         Graphics g;
-        Pen pen;
-        int xPos, yPos;
+        public Pen pen;
+        public int xPos, yPos;
         Brush brush;
-
+        
         /// <summary>
         /// Initialises <see cref="Drawer"/> class
         /// </summary>
@@ -133,7 +133,7 @@ namespace ASE_ProgrammingLanguage
         /// </summary>
         public void DisableFill()
         {
-            pen.Brush = null;
+            pen.Brush = Brushes.Transparent;
         }
 
 

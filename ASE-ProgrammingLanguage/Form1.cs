@@ -17,6 +17,7 @@ namespace ASE_ProgrammingLanguage
         Drawer drawer;
         CommandParser cmdParser;
         String cmdWindowTxt, cmdLineTxt;
+        //new DrawerTests(drawer);
         public Form1()
         {
             InitializeComponent();
