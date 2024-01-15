@@ -47,8 +47,15 @@ namespace ASE_ProgrammingLanguage
             if (cmdLineTxt != "run" && !string.IsNullOrWhiteSpace(cmdLineTxt))
             {
                 cmdParser.ParseCommands(cmdLineTxt);
+
             }
-            else 
+            else if(cmdLineTxt == "run")
+            {
+                cmdParser.ParseCommands(cmdWindowTxt);
+                
+
+            }
+            else
             {
                 //throw exception
                 new OtherException("Please enter commands into command line before running");

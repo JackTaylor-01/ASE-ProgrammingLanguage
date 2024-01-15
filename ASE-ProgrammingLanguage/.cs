@@ -9,18 +9,14 @@ using System.Windows.Forms;
 
 namespace ASE_ProgrammingLanguage
 {
-    /// <summary>
-    /// Class for parsing commands
-    /// </summary>
-    internal class CommandParser
+    internal class CommandExecutor
     {
         private List<Command> commands;
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
 
-      
-        public CommandParser(Drawer drawer)
+        public CommandExecutor(Drawer drawer)
         {
 
             this.drawer = drawer;
@@ -82,9 +78,7 @@ namespace ASE_ProgrammingLanguage
             }
 
         }
-        /// <summary>
-        /// Executes commands objects  
-        /// </summary>
+
         public void ExecuteCommands()
         {
             foreach (Command command in commands)
@@ -170,10 +164,7 @@ namespace ASE_ProgrammingLanguage
 
             }
         }
-        /// <summary>
-        /// Parses commands
-        /// </summary>
-        /// <param name="input"></param>
+
         public void ParseCommands(string input)
         {
             List<Command> parsedCommands = new List<Command>();
@@ -210,9 +201,6 @@ namespace ASE_ProgrammingLanguage
             ExecuteCommands();
         }
 
-        /// <summary>
-        /// List object command with the arguments Name and arguments
-        /// </summary>
         public class Command
         {
             public string Name { get; set; }
