@@ -156,9 +156,9 @@ namespace ASE_ProgrammingLanguage
                         break;
 
                     case "drawtriangle":
-                        if (command.Arguments.Count == 1 && command.Arguments[0] is int)
+                        if (command.Arguments.Count == 3 && command.Arguments[0] is int && command.Arguments[1] is int && command.Arguments[2] is int)
                         {
-                            drawer.DrawTriangle((int)command.Arguments[0]);
+                            drawer.DrawTriangle((int)command.Arguments[0], (int)command.Arguments[1], (int)command.Arguments[2]);
                         }
                         else
                         {
@@ -196,6 +196,17 @@ namespace ASE_ProgrammingLanguage
                         drawer.DisableFill();
                         break;
 
+                    case "var":
+                        if (command.Arguments.Count == 2 && command.Arguments[0] is String)
+                        {
+                            Console.WriteLine($"variable {command.Arguments[0]} created");
+                        }
+                        else
+                        {
+                            new OtherException("variable nams must be in the form of string");
+                        }
+                        break;
+
                     default:
                         new OtherException(command + " is not a valid command");
                         break;
@@ -216,8 +227,8 @@ namespace ASE_ProgrammingLanguage
             foreach (string line in lines)
             {
                 // Use regular expression to match command structure and variable structure
-                Match commandMatch = Regex.Match(line, @"(?<name>\w+)\((?<args>[^)]*)\)");
-                Match variableMatch = Regex.Match(line, @"Var\((?<name>\w+),\s*(?<value>[^)]*)\)");
+                Match commandMatch = Regex.Match(line, @"(?<name>\w+)\s*(?:(?<args><\w+>)|(?<args>\w+(?:,\s*\w+)*))?");
+                Match variableMatch = Regex.Match(line, @"(?<name>\w+)\s*=\s*(?<value>[^;]*)");
                 if (commandMatch.Success)
                 {
                     string name = commandMatch.Groups["name"].Value;
@@ -236,7 +247,7 @@ namespace ASE_ProgrammingLanguage
                         }
                     }
 
-                    parsedCommands.Add(new Command(name, arguments, false));
+                    parsedCommands.Add(new Command(name, arguments));
                 }
                 else if (variableMatch.Success)
                 {
@@ -244,6 +255,7 @@ namespace ASE_ProgrammingLanguage
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
 
                     List<object> values = new List<object>();
+                    values.Add(varName);
                     if (int.TryParse(varValueStr, out int intValue))
                     {
                         values.Add(intValue);
@@ -253,7 +265,7 @@ namespace ASE_ProgrammingLanguage
                         values.Add(varValueStr);
                     }
 
-                    parsedCommands.Add(new Command(varName, values, true));
+                    parsedCommands.Add(new Command("Var", values));
 
                 }
 
@@ -270,13 +282,12 @@ namespace ASE_ProgrammingLanguage
         {
             public string Name { get; set; }
             public List<object> Arguments { get; set; }
-            public bool Var { get; set; }
 
-            public Command(string name, List<object> arguments, bool var)
+            public Command(string name, List<object> arguments)
             {
                 Name = name;
                 Arguments = arguments;
-                Var = var;
+
             }
 
             public override string ToString()

@@ -110,12 +110,13 @@ namespace ASE_ProgrammingLanguage
         /// Draws triangle 
         /// </summary>
         /// <param name="sideLength"> Length of the sides of the triangle</param>
-        public void DrawTriangle(int sideLength)
+        public void DrawTriangle(int tbase, int adj, int hyp)
         {
             Point[] trianglePoints = {
-                new Point(xPos, yPos - sideLength / 2),
-                new Point(xPos - sideLength / 2, yPos + sideLength / 2),
-                new Point(xPos + sideLength / 2, yPos + sideLength / 2)
+                new Point(xPos, yPos),
+                new Point(xPos - tbase / 2, yPos + adj),
+                new Point(xPos + tbase / 2, yPos + adj)
+
             };
 
             if (fill)
