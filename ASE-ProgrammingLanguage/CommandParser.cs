@@ -209,17 +209,19 @@ namespace ASE_ProgrammingLanguage
         public void ParseCommands(string input)
         {
             List<Command> parsedCommands = new List<Command>();
+            Dictionary<string, object> variables = new Dictionary<string, object>();
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
             foreach (string line in lines)
             {
-                // Use regular expression to match command structure
-                Match match = Regex.Match(line, @"(?<name>\w+)\((?<args>[^)]*)\)");
-                if (match.Success)
+                // Use regular expression to match command structure and variable structure
+                Match commandMatch = Regex.Match(line, @"(?<name>\w+)\((?<args>[^)]*)\)");
+                Match variableMatch = Regex.Match(line, @"Var\((?<name>\w+),\s*(?<value>[^)]*)\)");
+                if (commandMatch.Success)
                 {
-                    string name = match.Groups["name"].Value;
-                    string[] argsArray = match.Groups["args"].Value.Split(',');
+                    string name = commandMatch.Groups["name"].Value;
+                    string[] argsArray = commandMatch.Groups["args"].Value.Split(',');
 
                     List<object> arguments = new List<object>();
                     foreach (string arg in argsArray)
@@ -235,6 +237,23 @@ namespace ASE_ProgrammingLanguage
                     }
 
                     parsedCommands.Add(new Command(name, arguments));
+                }
+                else if (variableMatch.Success)
+                {
+                    string varName = variableMatch.Groups["name"].Value;
+                    string varValueStr = variableMatch.Groups["value"].Value.Trim();
+
+                    object varValue; //object declaration allows varValue to store values of any type 
+                    if (int.TryParse(varValueStr, out int intValue))
+                    {
+                        varValue = intValue;
+                    }
+                    else
+                    {
+                        varValue = varValueStr;
+                    }
+
+                    variables[varName] = varValue;
                 }
 
             }
