@@ -15,6 +15,7 @@ namespace ASE_ProgrammingLanguage
     internal class CommandParser
     {
         private List<Command> commands;
+        //Dictionary<string, object> variables;
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
@@ -209,7 +210,6 @@ namespace ASE_ProgrammingLanguage
         public void ParseCommands(string input)
         {
             List<Command> parsedCommands = new List<Command>();
-            Dictionary<string, object> variables = new Dictionary<string, object>();
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
@@ -243,17 +243,18 @@ namespace ASE_ProgrammingLanguage
                     string varName = variableMatch.Groups["name"].Value;
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
 
-                    object varValue; //object declaration allows varValue to store values of any type 
+                    List<object> values = new List<object>();
                     if (int.TryParse(varValueStr, out int intValue))
                     {
-                        varValue = intValue;
+                        values.Add(intValue);
                     }
                     else
                     {
-                        varValue = varValueStr;
+                        values.Add(varValueStr);
                     }
 
-                    variables[varName] = varValue;
+                    parsedCommands.Add(new Command(varName, values));
+
                 }
 
             }
