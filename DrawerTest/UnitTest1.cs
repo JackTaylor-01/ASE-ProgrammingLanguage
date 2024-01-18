@@ -115,7 +115,7 @@ namespace DrawerTest
         {
             try
             {
-                drawer.DrawTriangle(30);
+                drawer.DrawTriangle(30,30);
             }
             catch (Exception ex)
             {

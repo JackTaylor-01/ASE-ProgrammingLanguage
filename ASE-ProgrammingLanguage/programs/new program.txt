@@ -1,17 +1,24 @@
 MoveTo 50, 50
 DrawLine 100, 100
-DrawCircle 30
+var1 = 30
+DrawCircle var1
 SetPenColour Blue
 DrawTo 200, 250
+var1 = 300
+var2 = 92
 DrawRectangle 40, 60
-SetBrushColour Green 
+If
+var3 = Red
+SetBrushColour Red 
 EnableFill
-DrawTriangle 50,50,50
+DrawTriangle 50,50
 DrawTo 150, 80
-Disablefill 
+Disablefill
+Endif 
 DrawCircle 50
 moveto 100,100
 drawrectangle 100,50
 enablefill 
 moveto 200,200
 drawrectangle 30,80
+DrawLine var1,var2
