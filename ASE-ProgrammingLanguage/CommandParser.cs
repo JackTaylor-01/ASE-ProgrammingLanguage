@@ -236,7 +236,7 @@ namespace ASE_ProgrammingLanguage
                         }
                     }
 
-                    parsedCommands.Add(new Command(name, arguments));
+                    parsedCommands.Add(new Command(name, arguments, false));
                 }
                 else if (variableMatch.Success)
                 {
@@ -253,7 +253,7 @@ namespace ASE_ProgrammingLanguage
                         values.Add(varValueStr);
                     }
 
-                    parsedCommands.Add(new Command(varName, values));
+                    parsedCommands.Add(new Command(varName, values, true));
 
                 }
 
@@ -270,11 +270,13 @@ namespace ASE_ProgrammingLanguage
         {
             public string Name { get; set; }
             public List<object> Arguments { get; set; }
+            public bool Var { get; set; }
 
-            public Command(string name, List<object> arguments)
+            public Command(string name, List<object> arguments, bool var)
             {
                 Name = name;
                 Arguments = arguments;
+                Var = var;
             }
 
             public override string ToString()
