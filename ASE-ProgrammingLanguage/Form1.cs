@@ -52,8 +52,19 @@ namespace ASE_ProgrammingLanguage
             }
             else if(cmdLineTxt == "run")
             {
-                cmdParser.ParseCommands(cmdWindowTxt);
-                
+                //cmdParser.ParseCommands(cmdWindowTxt);
+                CommandBlocker commandBlocker = new CommandBlocker(cmdWindowTxt);
+
+                // Display the processed command blocks
+                foreach (List<string> block in commandBlocker.commandBlocks)
+                {
+                    Console.WriteLine("----Start block----");
+                    foreach (string line in block)
+                    {
+                        Console.WriteLine(line);
+                    }
+                    Console.WriteLine("------end block------");
+                }
 
             }
             else

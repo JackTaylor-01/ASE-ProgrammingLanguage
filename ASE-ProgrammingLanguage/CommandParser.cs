@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ASE_ProgrammingLanguage.CommandParser;
 using static System.Windows.Forms.LinkLabel;
 
 namespace ASE_ProgrammingLanguage
@@ -18,7 +19,7 @@ namespace ASE_ProgrammingLanguage
     internal class CommandParser
     {
         private List<Command> commands;
-        //Dictionary<string, object> variables;
+        Dictionary<object, object> variables = new Dictionary<object, object>();
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
@@ -90,14 +91,9 @@ namespace ASE_ProgrammingLanguage
         /// </summary>
         public void ExecuteCommands()
         {
-            Dictionary<object, object> variables = new Dictionary<object, object>();
+            //Dictionary<object, object> variables = new Dictionary<object, object>();
             foreach (Command command in commands)
             {
-                foreach (KeyValuePair<object, object> kvp in variables)
-                {
-                    Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
-                }
-
                 switch (command.Name.ToLower()) //to lower so commands arent cast sensative
                 {
                     case "drawline":
@@ -165,7 +161,6 @@ namespace ASE_ProgrammingLanguage
                         if (command.Arguments.Count == 1)
                         {
                             int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            Console.WriteLine(arg1);
                             drawer.DrawCircle(arg1);
                         }
                         else
@@ -246,33 +241,37 @@ namespace ASE_ProgrammingLanguage
         public void ParseCommands(string input)
         {
             List<Command> parsedCommands = new List<Command>();
+            List<Variable> parsedVariables = new List<Variable>();
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
             bool skipLine = false;
-            Match aconditionalCommandMatch = Regex.Match(input, @"^\s*(If)\s+(?<condition>.+?)\s*(Endif)\s*$");
-            int ifCount = aconditionalCommandMatch.Groups.Count;
-            Console.WriteLine(ifCount);
+            Match conditionalBodyMatch = Regex.Match(input, @"^\s*If\s+(?<body>.+?)\s*Endif\s*$");
+            int ifCount = conditionalBodyMatch.Groups.Count;
+            //Console.WriteLine(ifCount);
             foreach (string line in lines)
             {
                 // Use regular expression to match command structure and variable structure
+                //Console.WriteLine(line);
                 Match commandMatch = Regex.Match(line, @"^(?!If|Endif)(?<name>\w+)\s*(?:(?<args><\w+>)|(?<args>\w+(?:,\s*\w+)*))?[^=]*$");
                 Match variableMatch = Regex.Match(line, @"(?<name>\w+)\s*=\s*(?<value>[^;]*)");
-                Match conditionalCommandMatch = Regex.Match(line, @"^\s*(If)\s+(?<condition>.+?)\s*(Endif)\s*$");
+                Match conditionalCommandMatch = Regex.Match(line, @"^\s*If\s+(?<condition>.+)$");
+                string condition = conditionalCommandMatch.Groups["condition"].Value;
 
                 if (conditionalCommandMatch.Success && skipLine == true)
                 {
-                    Console.WriteLine("ENDIF");
-                    if (string.Equals((conditionalCommandMatch.Groups["Endif"].Value), "Endif"))
-                    {
-                        skipLine = false;
-                    }
+                    //Console.WriteLine("ENDIF");
+                    //if (string.Equals((conditionalCommandMatch.Groups["Endif"].Value), "Endif"))
+                    //{
+                    //    skipLine = false;
+                    //}
 
                 }
                 else if (skipLine == false)
                 {
                     if (commandMatch.Success)
                     {
+                        //Console.WriteLine(line);
                         string name = commandMatch.Groups["name"].Value;
                         string[] argsArray = commandMatch.Groups["args"].Value.Split(',');
                         //Console.WriteLine(name);
@@ -293,6 +292,7 @@ namespace ASE_ProgrammingLanguage
                     }
                     else if (variableMatch.Success)
                     {
+                        //Console.WriteLine(line);
                         string varName = variableMatch.Groups["name"].Value;
                         string varValueStr = variableMatch.Groups["value"].Value.Trim();
 
@@ -312,13 +312,106 @@ namespace ASE_ProgrammingLanguage
                     }
                     else if (conditionalCommandMatch.Success)
                     {
-                        if (string.Equals((conditionalCommandMatch.Groups["If"].Value), "If"))
+                        Console.WriteLine(line) ;
+
+                        //check condition is met
+                        Match conditionMatch = Regex.Match(condition, @"^\s*(?<variable>\w+)\s*(?:(==|<|>|!=)\s*(?<value>\w+))?\s*$");
+                        string variable = conditionMatch.Groups["variable"].Value.Trim();
+                        Console.WriteLine(variable) ;
+                        
+                        string comparisonOperator = conditionMatch.Groups[2].Value;
+                        string value = conditionMatch.Groups["value"].Value;
+                        Console.WriteLine("conditionalCommandMatch success");
+                        Console.WriteLine(condition);
+                        int ifBodyCount = 0;
+                        Console.WriteLine("IF statement");
+
+                        if (conditionMatch.Success)
                         {
-                            skipLine = true;
-                            //ParseCommands(conditionalCommandMatch.Groups["condition"].Value);
-                            Console.WriteLine(conditionalCommandMatch.Groups["condition"].Value);
-                            Console.WriteLine("IF STATEMENT");
+                            Console.WriteLine("IF statement");
+                            if (variables.Count > 0)
+                            {
+                                Console.WriteLine("Dictionary has values ");
+                            }
+                            if (variables.ContainsKey(variable))
+                            {
+                                Console.WriteLine("variable exists");
+                                // Process the condition based on the comparison operator
+                                switch (comparisonOperator.Trim())
+                                {
+                                    case "==":
+                                        // Handle equality comparison
+                                        if (variable == value)
+                                        {
+                                            // Condition is true
+                                            //skipLine = true;
+                                            //ParseCommands(conditionalBodyMatch.Groups["body"].Value);
+                                            Console.WriteLine(conditionalBodyMatch.Groups["body"].Value);
+                                            Console.WriteLine("Condition is true (==)");
+                                        }
+                                        else
+                                        {
+                                            // Condition is false
+                                            Console.WriteLine("Condition is false (==)");
+                                        }
+                                        break;
+
+                                    case "<":
+                                        // Handle less than comparison
+                                        if (int.Parse(variable) < int.Parse(value))
+                                        {
+                                            // Condition is true
+                                            Console.WriteLine("Condition is true (<)");
+                                        }
+                                        else
+                                        {
+                                            // Condition is false
+                                            Console.WriteLine("Condition is false (<)");
+                                        }
+                                        break;
+
+                                    case ">":
+                                        // Handle equality comparison
+                                        if (int.Parse(variable) > int.Parse(value))
+                                        {
+                                            // Condition is true
+                                            Console.WriteLine("Condition is true (>)");
+                                        }
+                                        else
+                                        {
+                                            // Condition is false
+                                            Console.WriteLine("Condition is false (>)");
+                                        }
+                                        break;
+
+                                    case "!=":
+                                        // Handle equality comparison
+                                        if (variable != value)
+                                        {
+                                            // Condition is true
+                                            Console.WriteLine("Condition is true (!=)");
+                                        }
+                                        else
+                                        {
+                                            // Condition is false
+                                            Console.WriteLine("Condition is false (!=)");
+                                        }
+                                        break;
+
+
+                                    default:
+                                        // Invalid comparison operator
+                                        Console.WriteLine("Invalid comparison operator");
+                                        break;
+                                }
+                            }
                         }
+                        else if (!conditionMatch.Success)
+                        {
+                            new OtherException("invalid parameters for statement");
+                            break;
+                        }
+
 
                     }
                 }
@@ -349,6 +442,23 @@ namespace ASE_ProgrammingLanguage
             {
                 string args = string.Join(", ", Arguments);
                 return $"{Name}({args})";
+            }
+        }
+
+        public class Variable
+        {
+            public string Name { get; set; }
+            public object Value { get; set; }
+
+            public Variable(string name, object value)
+            {
+                Name = name;
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return $"{Name} = {Value}";
             }
         }
 

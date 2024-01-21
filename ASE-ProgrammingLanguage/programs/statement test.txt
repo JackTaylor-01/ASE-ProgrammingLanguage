@@ -8,13 +8,22 @@ var1 = 300
 var2 = 92
 DrawRectangle 40, 60
 If var1 > 200
-var3 = Red
-SetBrushColour Red 
-EnableFill
-DrawTriangle 50,50
-DrawTo 150, 80
-Disablefill
-Endif var1 > 200
+   var3 = Red
+   SetBrushColour Red 
+   EnableFill
+   DrawTriangle 50,50
+   DrawTo 150, 80
+   Disablefill
+Endif
+Count = 0
+While count < 10
+   DrawCircle count
+   MoveTo count, count
+   If count == 5
+      DrawCircle 100
+   Endif
+   Count = Count + 1
+Endloop 
 DrawCircle 50
 moveto 100,100
 drawrectangle 100,50
