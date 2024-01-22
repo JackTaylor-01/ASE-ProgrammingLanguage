@@ -5,6 +5,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -163,6 +164,7 @@ namespace ASE_ProgrammingLanguage
                     case "drawcircle":
                         if (command.Arguments.Count == 1)
                         {
+
                             int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
                             drawer.DrawCircle(arg1);
                         }
@@ -220,8 +222,31 @@ namespace ASE_ProgrammingLanguage
                     case "var":
                         if (variables.ContainsKey(command.Arguments[0])) //checks if variable already exists
                         {
-                            //changes value of variable
-                            variables[command.Arguments[0]] = command.Arguments[1];
+                            //determine variable form i.e. Count = Count + 1
+                            if (command.Arguments[1] is int)
+                            {
+                                variables[command.Arguments[0]] = command.Arguments[1];
+                            }
+                            else if (command.Arguments[1] is string)
+                            {
+                                Match variableValueMatch = Regex.Match((string)command.Arguments[1], @"^(?<number1>\d+)\s*\+\s*(?<number2>\d+)$");
+                                String var1 = variableValueMatch.Groups["number1"].Value;
+                                String var2 = variableValueMatch.Groups["number2"].Value;
+                                String[] varValues = { var1, var2 };
+                                int totalVal = 0;
+                                foreach(String var in varValues)
+                                {
+                                    if (int.TryParse(var, out int intValue))
+                                    {
+                                        totalVal += intValue;
+                                    }
+                                    else if (variables.ContainsKey(var))
+                                    {
+                                        variables[command.Arguments[0]] = (int)variables[var] + totalVal;
+                                    }
+                                }
+                            }
+    
                         }
                         else
                         {
@@ -253,26 +278,25 @@ namespace ASE_ProgrammingLanguage
             {
                 // Use regular expression to match command structure and variable structure
                 //Console.WriteLine(line);
-                Match commandMatch = Regex.Match(line.Trim(), @"^(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
-
-                Match variableMatch = Regex.Match(line, @"(?<name>\w+)\s*=\s*(?<value>[^;]*)");
-                String arg1 = commandMatch.Groups["arg1"].Value;
-                String arg2 = commandMatch.Groups["arg2"].Value;
+                Match commandMatch = Regex.Match(line.Trim(), @"^(?!(endif|endloop)\s)(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
+                Match variableMatch = Regex.Match(line, @"^(?!(if|while)\s)(?<name>\w+)\s*=\s*(?<value>[^;]*)$");
+                String cArg1 = commandMatch.Groups["arg1"].Value;
+                String cArg2 = commandMatch.Groups["arg2"].Value;
                 if (commandMatch.Success)
                 {
                     //Console.WriteLine("Command match: " + line);
                     string name = commandMatch.Groups["name"].Value;
                     string[] argsArray;
-                    if (!string.IsNullOrWhiteSpace(arg2))
+                    if (!string.IsNullOrWhiteSpace(cArg2))
                     {
-                        argsArray = new string[] { commandMatch.Groups["arg1"].Value, commandMatch.Groups["arg2"].Value };
+                        argsArray = new string[] { cArg1, cArg2 };
                     }
                     else
                     {
-                        argsArray = new string[] { commandMatch.Groups["arg1"].Value};
+                        argsArray = new string[] { cArg1 };
                     }
                     
-                    Console.WriteLine($"Command: {name} {commandMatch.Groups["arg1"].Value} {commandMatch.Groups["arg2"].Value}");
+                    //Console.WriteLine($"Command: {name} {cArg1} {cArg2}");
                     List<object> arguments = new List<object>();
                     foreach (string arg in argsArray)
                     {
@@ -293,9 +317,11 @@ namespace ASE_ProgrammingLanguage
                     //Console.WriteLine("Variable match: " + line);
                     string varName = variableMatch.Groups["name"].Value;
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
-                    Console.WriteLine($"Variable: {varName} {varValueStr}");
+
+                    //Console.WriteLine($"Variable: {varName} {varValueStr}");
+
                     List<object> values = new List<object>();
-                    values.Add(varName);
+                    values.Add(varName); 
                     if (int.TryParse(varValueStr, out int intValue))
                     {
                         values.Add(intValue);
@@ -330,13 +356,11 @@ namespace ASE_ProgrammingLanguage
             {
                 foreach (List<String> block in blocks)
                 {
-                    /*System.Console.WriteLine("---------BLOCK-----------");
-                    Console.WriteLine(block);
-                    System.Console.WriteLine("---------BLOCK-----------");*/
+
                     BlockType(new List<List<string>> {block});
                 }
             }
-            else if (AssertSelection(ConvertListToString(blocks[0])))
+            else if (AssertSelection(ConvertListToString(blocks[0])) == "true")
             {
                 //format
                 String formattedBlock = FormatBlock(ConvertListToString(blocks[0]));           
@@ -344,18 +368,26 @@ namespace ASE_ProgrammingLanguage
 
                 foreach (List<string> block in commandBlocker.commandBlocks)
                 {
-                  
-                    /*foreach (String line in block)
-                    {
-                        Console.WriteLine(line);
-                    }*/
                     BlockType(new List<List<string>> {block});
                 }
-
-
-
-
             }
+            else if (AssertSelection(ConvertListToString(blocks[0])) == "NonVar" || AssertSelection(ConvertListToString(blocks[0])) == "NonMatch")
+            {
+                blocks = new List<List<string>>();
+            }
+            else if (AssertIteration(ConvertListToString(blocks[0])))
+            {
+                //format
+
+                String formattedBlock = FormatBlock(ConvertListToString(blocks[0]));
+                CommandBlocker commandBlocker = new CommandBlocker(formattedBlock);
+
+                foreach (List<string> block in commandBlocker.commandBlocks)
+                {
+                    BlockType(new List<List<string>> { block });
+                }
+            }
+            
             else 
             {
                 Console.WriteLine("PARSING COMMANDS");
@@ -382,14 +414,14 @@ namespace ASE_ProgrammingLanguage
             return returnString;
         }
 
-        public bool AssertSelection(String block)
+        public string AssertSelection(String block)
         {
             string[] lines = block.Split('\n');
             lines[0] = lines[0].ToLower();
 
             if (lines.Length > 0 && lines[0].Trim().StartsWith("if"))
             {
-
+                
 
                 Match selectionMatch = Regex.Match(lines[0], @"^if\s+(\w+)\s+(>|<|==|!=)\s+(\w+)$");
                
@@ -408,24 +440,25 @@ namespace ASE_ProgrammingLanguage
                         {
                             case "==":
                                 // Handle equality comparison
-                                if (variable == value)
+                                if (Convert.ToInt32(variables[variable]) == int.Parse(value))
                                 {
-                                    return true;
+                                    return "true";
                                 }
                                 else
                                 {
-                                    return false;
+                                    return "NonMatch";
                                 }
 
                             case "<":
                                 // Handle less than comparison
-                                if (int.Parse(variable) < int.Parse(value))
+                                if (Convert.ToInt32(variables[variable]) < int.Parse(value))
                                 {
-                                    return true;
+                                    return "true";
                                 }
                                 else
                                 {
-                                    return false;
+
+                                    return "NonMatch";
                                 }
 
                             case ">":
@@ -433,23 +466,111 @@ namespace ASE_ProgrammingLanguage
                                 if (Convert.ToInt32(variables[variable]) > int.Parse(value))
                                 {
 
-                                    return true;
+                                    return "true";
                                 }
                                 else
                                 {
-                                    return false;
+
+                                    return "NonMatch";
                                 }
 
                             case "!=":
                                 // Handle equality comparison
-                                if (variable != value)
+                                if (Convert.ToInt32(variables[variable]) != int.Parse(value))
                                 {
-                                    return true;
+                                    return "true";
                                 }
                                 else
                                 {
-                                    return false;
+
+                                    return "NonMatch";
                                 }
+
+
+                            default:
+                                // Invalid comparison operator
+                                Console.WriteLine("Invalid comparison operator");
+                                return "NonMatch";
+                        }
+                    }
+                    else
+                    {
+                        return "NonVar";
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Throw exception");
+                }
+            }
+
+            return "false";
+
+
+
+        }
+        public bool AssertIteration(String block)
+        {
+            string[] lines = block.Split('\n');
+            lines[0] = lines[0].ToLower();
+
+            if (lines.Length > 0 && lines[0].Trim().StartsWith("while"))
+            {
+
+
+                Match selectionMatch = Regex.Match(lines[0], @"^while\s+(\w+)\s+(>|<|==|!=)\s+(\w+)$");
+
+                if (selectionMatch.Success)
+                {
+
+                    string variable = selectionMatch.Groups[1].Value.Trim();
+                    string comparisonOperator = selectionMatch.Groups[2].Value;
+                    string value = selectionMatch.Groups[3].Value;
+
+                    if (variables.ContainsKey(variable))
+                    {
+
+                        // Process the condition based on the comparison operator
+                        switch (comparisonOperator.Trim())
+                        {
+                            case "==":
+                                // Handle equality comparison
+                                while (Convert.ToInt32(variables[variable]) == int.Parse(value))
+                                {
+                                    return true;
+                                }
+
+                                return false;
+
+                            case "<":
+                                // Handle less than comparison
+                                while (Convert.ToInt32(variables[variable]) < int.Parse(value))
+                                {
+                                    return true;
+                                }
+
+                                return false;
+
+                            case ">":
+                                // Handle equality comparison
+                                while (Convert.ToInt32(variables[variable]) > int.Parse(value))
+                                {
+
+                                    return true;
+                                }
+                              
+                                return false;
+                               
+
+                            case "!=":
+                                // Handle equality comparison
+                                while (Convert.ToInt32(variables[variable]) != int.Parse(value))
+                                {
+                                    return true;
+                                }
+                              
+                                return false;
+                                
 
 
                             default:
@@ -465,6 +586,8 @@ namespace ASE_ProgrammingLanguage
                 }
             }
             return false;
+
+
 
         }
         public string FormatBlock(String block)
