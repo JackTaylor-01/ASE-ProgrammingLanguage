@@ -54,17 +54,18 @@ namespace ASE_ProgrammingLanguage
             {
                 //cmdParser.ParseCommands(cmdWindowTxt);
                 CommandBlocker commandBlocker = new CommandBlocker(cmdWindowTxt);
-              
+
                 // Display the processed command blocks
-                foreach (List<string> block in commandBlocker.commandBlocks)
+                /*foreach (List<string> block in commandBlocker.commandBlocks)
                 {
                     cmdParser.BlockType(block);
-                    foreach (string line in block)
+                    *//*foreach (string line in block)
                     {
                         Console.WriteLine(line);
                     }
-                    Console.WriteLine("--------------------");
-                }
+                    Console.WriteLine("--------------------");*//*
+                }*/
+                cmdParser.BlockType(commandBlocker.commandBlocks);
 
             }
             else

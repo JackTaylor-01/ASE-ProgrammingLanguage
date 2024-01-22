@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using static ASE_ProgrammingLanguage.CommandParser;
 using static System.Windows.Forms.LinkLabel;
 
@@ -105,7 +107,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid number of argument(s)");
+                            new OtherException("invalid number of argument(s) for : DrawLine");
                         }
                         
                         break;
@@ -113,13 +115,14 @@ namespace ASE_ProgrammingLanguage
                     case "moveto":
                         if (command.Arguments.Count == 2)
                         {
+                            
                             int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
                             int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
                             drawer.MoveTo(arg1, arg2);
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException("invalid argument(s) for : MoveTo");
                         }
                         break;
 
@@ -132,7 +135,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException("invalid argument(s) for : DrawTo");
                         }
                         break;
 
@@ -153,7 +156,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException($"invalid argument(s) for : DrawRectangle");
                         }
                         break;
 
@@ -165,7 +168,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException($"invalid argument(s) for : DrawCircle");
                         }
                         break;
 
@@ -178,7 +181,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException($"invalid argument(s) for : DrawTriangle");
                         }
                         break;
 
@@ -190,7 +193,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException($"invalid argument(s) for : SetPenColour");
                         }
                         break;
 
@@ -202,7 +205,7 @@ namespace ASE_ProgrammingLanguage
                         }
                         else
                         {
-                            new OtherException("invalid argument(s)");
+                            new OtherException("invalid argument(s) for : SetBrushColour");
                         }
                         break;
 
@@ -250,17 +253,26 @@ namespace ASE_ProgrammingLanguage
             {
                 // Use regular expression to match command structure and variable structure
                 //Console.WriteLine(line);
-                Match commandMatch = Regex.Match(line, @"^Command\s+(?<arg1>\w+)(?:\s+(?<arg2>\w+))?$");
+                Match commandMatch = Regex.Match(line.Trim(), @"^(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
 
                 Match variableMatch = Regex.Match(line, @"(?<name>\w+)\s*=\s*(?<value>[^;]*)");
-
-
+                String arg1 = commandMatch.Groups["arg1"].Value;
+                String arg2 = commandMatch.Groups["arg2"].Value;
                 if (commandMatch.Success)
                 {
                     //Console.WriteLine("Command match: " + line);
                     string name = commandMatch.Groups["name"].Value;
-                    string[] argsArray = new string[] { commandMatch.Groups["arg1"].Value, commandMatch.Groups["arg2"].Value };
-                    //Console.WriteLine(name);
+                    string[] argsArray;
+                    if (!string.IsNullOrWhiteSpace(arg2))
+                    {
+                        argsArray = new string[] { commandMatch.Groups["arg1"].Value, commandMatch.Groups["arg2"].Value };
+                    }
+                    else
+                    {
+                        argsArray = new string[] { commandMatch.Groups["arg1"].Value};
+                    }
+                    
+                    Console.WriteLine($"Command: {name} {commandMatch.Groups["arg1"].Value} {commandMatch.Groups["arg2"].Value}");
                     List<object> arguments = new List<object>();
                     foreach (string arg in argsArray)
                     {
@@ -281,7 +293,7 @@ namespace ASE_ProgrammingLanguage
                     //Console.WriteLine("Variable match: " + line);
                     string varName = variableMatch.Groups["name"].Value;
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
-
+                    Console.WriteLine($"Variable: {varName} {varValueStr}");
                     List<object> values = new List<object>();
                     values.Add(varName);
                     if (int.TryParse(varValueStr, out int intValue))
@@ -311,64 +323,86 @@ namespace ASE_ProgrammingLanguage
             ExecuteCommands();
         }
 
-        public void BlockType(List<String> blocks)
+        public void BlockType(List<List<String>> blocks)
         {
-            //Console.WriteLine(blocks);
+
             if (blocks.Count > 1)
             {
-                foreach (String block in blocks)
+                foreach (List<String> block in blocks)
                 {
-                    BlockType(new List<string> {block});
+                    /*System.Console.WriteLine("---------BLOCK-----------");
+                    Console.WriteLine(block);
+                    System.Console.WriteLine("---------BLOCK-----------");*/
+                    BlockType(new List<List<string>> {block});
                 }
             }
-            else if (AssertSelection(blocks[0]))
+            else if (AssertSelection(ConvertListToString(blocks[0])))
             {
                 //format
-                String formattedBlock = FormatBlock(blocks[0]);
-                //System.Console.WriteLine(formattedBlock);
+                String formattedBlock = FormatBlock(ConvertListToString(blocks[0]));           
                 CommandBlocker commandBlocker = new CommandBlocker(formattedBlock);
+
                 foreach (List<string> block in commandBlocker.commandBlocks)
                 {
-                    BlockType(block);
+                  
+                    /*foreach (String line in block)
+                    {
+                        Console.WriteLine(line);
+                    }*/
+                    BlockType(new List<List<string>> {block});
                 }
+
 
 
 
             }
             else 
             {
-                /*foreach (string line in blocks[0])
-                {
-                    Console.WriteLine(line);
-                }*/
-                ParseCommands(blocks[0]);
+                Console.WriteLine("PARSING COMMANDS");
+                Console.WriteLine(ConvertListToString(blocks[0]));
+                Console.WriteLine("----------------");
+
+                ParseCommands(ConvertListToString(blocks[0]));
             }
+        }
+        public String ConvertListToString(List<String> list)
+        {
+            string returnString = "";
+            int lastIndex = list.Count - 1;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                returnString += list[i];
+
+                if (i < lastIndex)
+                {
+                    returnString += "\n";
+                }
+            }
+            return returnString;
         }
 
         public bool AssertSelection(String block)
         {
             string[] lines = block.Split('\n');
             lines[0] = lines[0].ToLower();
-            //Console.WriteLine(lines[0]);
-            // Check if the first line contains "If"
+
             if (lines.Length > 0 && lines[0].Trim().StartsWith("if"))
             {
-                Console.WriteLine("-----------HERE-----------");
-                Console.WriteLine(lines[0]);
-                Console.WriteLine("-----------HERE-----------");
+
 
                 Match selectionMatch = Regex.Match(lines[0], @"^if\s+(\w+)\s+(>|<|==|!=)\s+(\w+)$");
                
                 if (selectionMatch.Success)
                 {
-                    Console.WriteLine("Slection match success");
+
                     string variable = selectionMatch.Groups[1].Value.Trim();
                     string comparisonOperator = selectionMatch.Groups[2].Value;
                     string value = selectionMatch.Groups[3].Value;
 
                     if (variables.ContainsKey(variable))
                     {
-                        Console.WriteLine("variable exists");
+
                         // Process the condition based on the comparison operator
                         switch (comparisonOperator.Trim())
                         {
@@ -395,10 +429,10 @@ namespace ASE_ProgrammingLanguage
                                 }
 
                             case ">":
-                                Console.WriteLine(int.Parse(variable));
                                 // Handle equality comparison
-                                if (int.Parse(variable) > int.Parse(value))
+                                if (Convert.ToInt32(variables[variable]) > int.Parse(value))
                                 {
+
                                     return true;
                                 }
                                 else
@@ -436,15 +470,25 @@ namespace ASE_ProgrammingLanguage
         public string FormatBlock(String block)
         {
             string[] lines = block.Split('\n');
+            
+            string[] newLines = new string[lines.Length - 2];
+            int newIndex = 0;
 
-            // Remove the first and last lines
-            lines = lines.Where((line, index) => index != 0 && index != lines.Length - 1).ToArray();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if(i != 0 && i != lines.Length - 1)
+                {
 
+                    newLines[newIndex] = lines[i];
+                    newIndex++;
+                }
+            }    
+            
             // Trim 3 whitespaces from each line
-            lines = lines.Select(line => line.TrimStart(' ', '\t').Substring(3)).ToArray();
+            newLines = newLines.Select(newLine => newLine.Substring(3)).ToArray();
 
             // Join the modified lines back into a string
-            string result = string.Join("\n", lines);
+            string result = string.Join("\n", newLines);
 
             return result;
         }
