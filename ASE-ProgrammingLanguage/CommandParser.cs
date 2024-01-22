@@ -245,182 +245,208 @@ namespace ASE_ProgrammingLanguage
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
-            bool skipLine = false;
-            Match conditionalBodyMatch = Regex.Match(input, @"^\s*If\s+(?<body>.+?)\s*Endif\s*$");
-            int ifCount = conditionalBodyMatch.Groups.Count;
-            //Console.WriteLine(ifCount);
+
             foreach (string line in lines)
             {
                 // Use regular expression to match command structure and variable structure
                 //Console.WriteLine(line);
-                Match commandMatch = Regex.Match(line, @"^(?!If|Endif)(?<name>\w+)\s*(?:(?<args><\w+>)|(?<args>\w+(?:,\s*\w+)*))?[^=]*$");
+                Match commandMatch = Regex.Match(line, @"^Command\s+(?<arg1>\w+)(?:\s+(?<arg2>\w+))?$");
+
                 Match variableMatch = Regex.Match(line, @"(?<name>\w+)\s*=\s*(?<value>[^;]*)");
-                Match conditionalCommandMatch = Regex.Match(line, @"^\s*If\s+(?<condition>.+)$");
-                string condition = conditionalCommandMatch.Groups["condition"].Value;
 
-                if (conditionalCommandMatch.Success && skipLine == true)
+
+                if (commandMatch.Success)
                 {
-                    //Console.WriteLine("ENDIF");
-                    //if (string.Equals((conditionalCommandMatch.Groups["Endif"].Value), "Endif"))
-                    //{
-                    //    skipLine = false;
-                    //}
-
-                }
-                else if (skipLine == false)
-                {
-                    if (commandMatch.Success)
+                    //Console.WriteLine("Command match: " + line);
+                    string name = commandMatch.Groups["name"].Value;
+                    string[] argsArray = new string[] { commandMatch.Groups["arg1"].Value, commandMatch.Groups["arg2"].Value };
+                    //Console.WriteLine(name);
+                    List<object> arguments = new List<object>();
+                    foreach (string arg in argsArray)
                     {
-                        //Console.WriteLine(line);
-                        string name = commandMatch.Groups["name"].Value;
-                        string[] argsArray = commandMatch.Groups["args"].Value.Split(',');
-                        //Console.WriteLine(name);
-                        List<object> arguments = new List<object>();
-                        foreach (string arg in argsArray)
+                        if (int.TryParse(arg, out int intValue))
                         {
-                            if (int.TryParse(arg, out int intValue))
-                            {
-                                arguments.Add(intValue);
-                            }
-                            else
-                            {
-                                arguments.Add(arg.Trim());
-                            }
-                        }
-
-                        parsedCommands.Add(new Command(name, arguments));
-                    }
-                    else if (variableMatch.Success)
-                    {
-                        //Console.WriteLine(line);
-                        string varName = variableMatch.Groups["name"].Value;
-                        string varValueStr = variableMatch.Groups["value"].Value.Trim();
-
-                        List<object> values = new List<object>();
-                        values.Add(varName);
-                        if (int.TryParse(varValueStr, out int intValue))
-                        {
-                            values.Add(intValue);
+                            arguments.Add(intValue);
                         }
                         else
                         {
-                            values.Add(varValueStr);
+                            arguments.Add(arg.Trim());
                         }
-
-                        parsedCommands.Add(new Command("var", values));
-
                     }
-                    else if (conditionalCommandMatch.Success)
-                    {
-                        Console.WriteLine(line) ;
 
-                        //check condition is met
-                        Match conditionMatch = Regex.Match(condition, @"^\s*(?<variable>\w+)\s*(?:(==|<|>|!=)\s*(?<value>\w+))?\s*$");
-                        string variable = conditionMatch.Groups["variable"].Value.Trim();
-                        Console.WriteLine(variable) ;
-                        
-                        string comparisonOperator = conditionMatch.Groups[2].Value;
-                        string value = conditionMatch.Groups["value"].Value;
-                        Console.WriteLine("conditionalCommandMatch success");
-                        Console.WriteLine(condition);
-                        int ifBodyCount = 0;
-                        Console.WriteLine("IF statement");
-
-                        if (conditionMatch.Success)
-                        {
-                            Console.WriteLine("IF statement");
-                            if (variables.Count > 0)
-                            {
-                                Console.WriteLine("Dictionary has values ");
-                            }
-                            if (variables.ContainsKey(variable))
-                            {
-                                Console.WriteLine("variable exists");
-                                // Process the condition based on the comparison operator
-                                switch (comparisonOperator.Trim())
-                                {
-                                    case "==":
-                                        // Handle equality comparison
-                                        if (variable == value)
-                                        {
-                                            // Condition is true
-                                            //skipLine = true;
-                                            //ParseCommands(conditionalBodyMatch.Groups["body"].Value);
-                                            Console.WriteLine(conditionalBodyMatch.Groups["body"].Value);
-                                            Console.WriteLine("Condition is true (==)");
-                                        }
-                                        else
-                                        {
-                                            // Condition is false
-                                            Console.WriteLine("Condition is false (==)");
-                                        }
-                                        break;
-
-                                    case "<":
-                                        // Handle less than comparison
-                                        if (int.Parse(variable) < int.Parse(value))
-                                        {
-                                            // Condition is true
-                                            Console.WriteLine("Condition is true (<)");
-                                        }
-                                        else
-                                        {
-                                            // Condition is false
-                                            Console.WriteLine("Condition is false (<)");
-                                        }
-                                        break;
-
-                                    case ">":
-                                        // Handle equality comparison
-                                        if (int.Parse(variable) > int.Parse(value))
-                                        {
-                                            // Condition is true
-                                            Console.WriteLine("Condition is true (>)");
-                                        }
-                                        else
-                                        {
-                                            // Condition is false
-                                            Console.WriteLine("Condition is false (>)");
-                                        }
-                                        break;
-
-                                    case "!=":
-                                        // Handle equality comparison
-                                        if (variable != value)
-                                        {
-                                            // Condition is true
-                                            Console.WriteLine("Condition is true (!=)");
-                                        }
-                                        else
-                                        {
-                                            // Condition is false
-                                            Console.WriteLine("Condition is false (!=)");
-                                        }
-                                        break;
-
-
-                                    default:
-                                        // Invalid comparison operator
-                                        Console.WriteLine("Invalid comparison operator");
-                                        break;
-                                }
-                            }
-                        }
-                        else if (!conditionMatch.Success)
-                        {
-                            new OtherException("invalid parameters for statement");
-                            break;
-                        }
-
-
-                    }
+                    parsedCommands.Add(new Command(name, arguments));
                 }
+                else if (variableMatch.Success)
+                {
+                    //Console.WriteLine("Variable match: " + line);
+                    string varName = variableMatch.Groups["name"].Value;
+                    string varValueStr = variableMatch.Groups["value"].Value.Trim();
+
+                    List<object> values = new List<object>();
+                    values.Add(varName);
+                    if (int.TryParse(varValueStr, out int intValue))
+                    {
+                        values.Add(intValue);
+                    }
+                    else
+                    {
+                        values.Add(varValueStr);
+                    }
+
+                    parsedCommands.Add(new Command("var", values));
+
+                }
+                    
+                
                 
 
             }
 
             commands = parsedCommands;
+            /*foreach (Command item in commands)
+            {
+                Console.WriteLine(item.Name);
+
+            }*/
             ExecuteCommands();
+        }
+
+        public void BlockType(List<String> blocks)
+        {
+            //Console.WriteLine(blocks);
+            if (blocks.Count > 1)
+            {
+                foreach (String block in blocks)
+                {
+                    BlockType(new List<string> {block});
+                }
+            }
+            else if (AssertSelection(blocks[0]))
+            {
+                //format
+                String formattedBlock = FormatBlock(blocks[0]);
+                //System.Console.WriteLine(formattedBlock);
+                CommandBlocker commandBlocker = new CommandBlocker(formattedBlock);
+                foreach (List<string> block in commandBlocker.commandBlocks)
+                {
+                    BlockType(block);
+                }
+
+
+
+            }
+            else 
+            {
+                /*foreach (string line in blocks[0])
+                {
+                    Console.WriteLine(line);
+                }*/
+                ParseCommands(blocks[0]);
+            }
+        }
+
+        public bool AssertSelection(String block)
+        {
+            string[] lines = block.Split('\n');
+            lines[0] = lines[0].ToLower();
+            //Console.WriteLine(lines[0]);
+            // Check if the first line contains "If"
+            if (lines.Length > 0 && lines[0].Trim().StartsWith("if"))
+            {
+                Console.WriteLine("-----------HERE-----------");
+                Console.WriteLine(lines[0]);
+                Console.WriteLine("-----------HERE-----------");
+
+                Match selectionMatch = Regex.Match(lines[0], @"^if\s+(\w+)\s+(>|<|==|!=)\s+(\w+)$");
+               
+                if (selectionMatch.Success)
+                {
+                    Console.WriteLine("Slection match success");
+                    string variable = selectionMatch.Groups[1].Value.Trim();
+                    string comparisonOperator = selectionMatch.Groups[2].Value;
+                    string value = selectionMatch.Groups[3].Value;
+
+                    if (variables.ContainsKey(variable))
+                    {
+                        Console.WriteLine("variable exists");
+                        // Process the condition based on the comparison operator
+                        switch (comparisonOperator.Trim())
+                        {
+                            case "==":
+                                // Handle equality comparison
+                                if (variable == value)
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+
+                            case "<":
+                                // Handle less than comparison
+                                if (int.Parse(variable) < int.Parse(value))
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+
+                            case ">":
+                                Console.WriteLine(int.Parse(variable));
+                                // Handle equality comparison
+                                if (int.Parse(variable) > int.Parse(value))
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+
+                            case "!=":
+                                // Handle equality comparison
+                                if (variable != value)
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+
+
+                            default:
+                                // Invalid comparison operator
+                                Console.WriteLine("Invalid comparison operator");
+                                return false;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Throw exception");
+                }
+            }
+            return false;
+
+        }
+        public string FormatBlock(String block)
+        {
+            string[] lines = block.Split('\n');
+
+            // Remove the first and last lines
+            lines = lines.Where((line, index) => index != 0 && index != lines.Length - 1).ToArray();
+
+            // Trim 3 whitespaces from each line
+            lines = lines.Select(line => line.TrimStart(' ', '\t').Substring(3)).ToArray();
+
+            // Join the modified lines back into a string
+            string result = string.Join("\n", lines);
+
+            return result;
         }
 
         /// <summary>

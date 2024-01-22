@@ -47,23 +47,23 @@ namespace ASE_ProgrammingLanguage
             drawOutput.Invalidate(); //invalidate needed as form needs repainting
             if (cmdLineTxt != "run" && !string.IsNullOrWhiteSpace(cmdLineTxt))
             {
-                cmdParser.ParseCommands(cmdLineTxt);
+                //cmdParser.ParseCommands(cmdLineTxt);
 
             }
             else if(cmdLineTxt == "run")
             {
                 //cmdParser.ParseCommands(cmdWindowTxt);
                 CommandBlocker commandBlocker = new CommandBlocker(cmdWindowTxt);
-
+              
                 // Display the processed command blocks
                 foreach (List<string> block in commandBlocker.commandBlocks)
                 {
-                    Console.WriteLine("----Start block----");
+                    cmdParser.BlockType(block);
                     foreach (string line in block)
                     {
                         Console.WriteLine(line);
                     }
-                    Console.WriteLine("------end block------");
+                    Console.WriteLine("--------------------");
                 }
 
             }
