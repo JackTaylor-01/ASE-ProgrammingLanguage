@@ -16,13 +16,13 @@ If var1 > 200
    Disablefill
 Endif
 count = 0
-While count < 10
+While count < 100
    DrawCircle count
-   MoveTo count, count
+   MoveTo 270, 300
    If count == 5
       DrawCircle 100
    Endif
-   Count = Count + 1
+   count = count + 10
 Endloop 
 DrawCircle 50
 moveto 100,100
