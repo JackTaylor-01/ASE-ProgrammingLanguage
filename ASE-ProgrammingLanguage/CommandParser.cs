@@ -250,9 +250,8 @@ namespace ASE_ProgrammingLanguage
                                     }
                                     
                                 }
-                               
-                                variables[command.Arguments[0]] = currentValue + totalVal;
-                                Console.WriteLine("Count :" + (int)variables[command.Arguments[0]]);
+                                variables[command.Arguments[0]] = totalVal;
+
                             }
                             else
                             {
