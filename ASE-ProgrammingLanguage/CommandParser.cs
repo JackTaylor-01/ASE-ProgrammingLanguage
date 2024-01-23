@@ -26,7 +26,10 @@ namespace ASE_ProgrammingLanguage
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
-      
+        /// <summary>
+        /// Constructor constructs drawer from given graphics and instansiates Open file / Save file
+        /// </summary>
+        /// <param name="drawer">The drawer object used to draw onto bitmap</param>
         public CommandParser(Drawer drawer)
         {
 
@@ -90,7 +93,7 @@ namespace ASE_ProgrammingLanguage
 
         }
         /// <summary>
-        /// Executes commands objects  
+        /// Obtains arguments and executes command objects  
         /// </summary>
         public void ExecuteCommands()
         {
@@ -360,7 +363,10 @@ namespace ASE_ProgrammingLanguage
             }*/
             ExecuteCommands();
         }
-
+        /// <summary>
+        /// Determines block type given a Command block this function will also iterate for nested blocks 
+        /// </summary>
+        /// <param name="blocks">A list of lists containing blocks created by CommandBlocker class</param>
         public void BlockType(List<List<String>> blocks)
         {
 
@@ -475,13 +481,10 @@ namespace ASE_ProgrammingLanguage
                         }
                     }
 
-                    /*String formattedBlock = FormatBlock(ConvertListToString(blocks[0]));
-                    CommandBlocker commandBlocker = new CommandBlocker(formattedBlock);
-
-                    foreach (List<string> block in commandBlocker.commandBlocks)
+                    else
                     {
-                        BlockType(new List<List<string>> { block });
-                    }*/
+                        new OtherException($"The variable you are trying to process does not exist {variable}");
+                    }
                 }
             }
 
@@ -492,14 +495,16 @@ namespace ASE_ProgrammingLanguage
 
             else
             {
-                Console.WriteLine("PARSING COMMANDS");
-                Console.WriteLine(ConvertListToString(blocks[0]));
-                Console.WriteLine("----------------");
 
                 ParseCommands(ConvertListToString(blocks[0]));
             }
         
         }
+        /// <summary>
+        /// Converts a list of strings into a single string
+        /// </summary>
+        /// <param name="list"> list of strings</param>
+        /// <returns>String</returns>
         public String ConvertListToString(List<String> list)
         {
             string returnString = "";
@@ -516,7 +521,11 @@ namespace ASE_ProgrammingLanguage
             }
             return returnString;
         }
-
+        /// <summary>
+        /// Asserts whether a selection statement has been entered
+        /// </summary>
+        /// <param name="block">block containing potential statement</param>
+        /// <returns>String</returns>
         public string AssertSelection(String block)
         {
             string[] lines = block.Split('\n');
@@ -612,6 +621,11 @@ namespace ASE_ProgrammingLanguage
 
 
         }
+        /// <summary>
+        /// Asserts whether an iteration statement has been entered
+        /// </summary>
+        /// <param name="block">block containing potential statement</param>
+        /// <returns></returns>
         public string AssertIteration(String block)
         {
             string[] lines = block.Split('\n');
@@ -706,6 +720,11 @@ namespace ASE_ProgrammingLanguage
 
 
         }
+        /// <summary>
+        /// Formats a block to so it can be easily processed
+        /// </summary>
+        /// <param name="block">block to format</param>
+        /// <returns>string</returns>
         public string FormatBlock(String block)
         {
             string[] lines = block.Split('\n');
@@ -754,6 +773,9 @@ namespace ASE_ProgrammingLanguage
             }
         }
 
+        /// <summary>
+        /// Creates variable objects consisting of name and value
+        /// </summary>
         public class Variable
         {
             public string Name { get; set; }

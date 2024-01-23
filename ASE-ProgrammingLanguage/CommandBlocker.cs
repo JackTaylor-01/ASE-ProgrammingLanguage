@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ASE_ProgrammingLanguage
 {
+    /// <summary>
+    /// Converts string into List of lists of strings"
+    /// </summary>
     class CommandBlocker
     {
         public List<List<string>> commandBlocks;
@@ -16,7 +19,10 @@ namespace ASE_ProgrammingLanguage
             commandBlocks = new List<List<string>>();
             ProcessString(input);
         }
-
+        /// <summary>
+        /// Splits string into individual command blocks to be executed in order
+        /// </summary>
+        /// <param name="input">input string</param>
         private void ProcessString(string input)
         {
             string[] lines = input.Split('\n');
