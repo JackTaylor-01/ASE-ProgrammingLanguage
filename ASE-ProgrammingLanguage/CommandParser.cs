@@ -198,7 +198,6 @@ namespace ASE_ProgrammingLanguage
         public void ParseCommands(string input)
         {
             List<Command> parsedCommands = new List<Command>();
-            List<Variable> parsedVariables = new List<Variable>();
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
@@ -245,20 +244,13 @@ namespace ASE_ProgrammingLanguage
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
                     List<object> values = new List<object>();
                     values.Add(varName); 
-                    /*if (int.TryParse(varValueStr, out int intValue))
-                    {
-                        values.Add(intValue);
-                    }
-                    else
-                    {
-                        values.Add(varValueStr);
-                    }*/
-
+                   
                     if (variables.ContainsKey(varName)) //checks if variable already exists
                     {
-                        Match variableValueMatch = Regex.Match(varValueStr, @"^\s*([a-zA-Z_]\w*)\s*\+\s*([a-zA-Z_]\w*|\d+)\s*$");
+                        Match variableValueMatch = Regex.Match(varValueStr, @"^\s*([a-zA-Z_]\w*)\s*([+\-])\s*([a-zA-Z_]\w*|\d+)\s*$");
                         String var1 = variableValueMatch.Groups[1].Value;
-                        String var2 = variableValueMatch.Groups[2].Value;
+                        String comparisonOperator = variableValueMatch.Groups[2].Value;
+                        String var2 = variableValueMatch.Groups[3].Value;
 
                         //determine variable form i.e. Count = Count + 1
                         int intValue;
@@ -270,20 +262,34 @@ namespace ASE_ProgrammingLanguage
                         {
 
                             string[] varValues = { var1, var2 };
-                            object[] objValues = { var1, var2 };
+                            int[] intVarValues = {0,0};
+                            int intVar1;
+                            int intVar2;
                             int totalVal = 0;
-                            foreach (string var in varValues)
+                            for (int i = 0; i < varValues.Length; i++)
                             {
-
-                                if (int.TryParse(var, out int intVar))
+                                if (int.TryParse(varValues[i], out int intVar))
                                 {
-                                    totalVal += intVar; // Optionally accumulate the total
+                                    intVarValues[i] = intVar;
                                 }
-                                else if(variables.ContainsKey(var))
+                                else if (variables.ContainsKey(values[i]))
                                 {
-                                    totalVal += (int)variables[var];
+                                    intVarValues[i] = (int)variables[varValues[i]];
                                 }
+                                
                             }
+                            intVar1 = intVarValues[0];
+                            intVar2 = intVarValues[1];
+                            switch (comparisonOperator.Trim())
+                            {
+                                case "+":
+                                    totalVal = intVar1 + intVar2;
+                                    break;
+                                case "-":
+                                    totalVal = intVar1 - intVar2;
+                                    break;
+                            }
+                          
                             variables[varName] = totalVal;
                             
 
@@ -310,9 +316,7 @@ namespace ASE_ProgrammingLanguage
                     //parsedCommands.Add(CreateCommand("var", values));
 
                 }
-                    
-                
-                
+         
 
             }
 
@@ -725,26 +729,6 @@ namespace ASE_ProgrammingLanguage
             {
                 string args = string.Join(", ", Arguments);
                 return $"{Name}({args})";
-            }
-        }
-
-        /// <summary>
-        /// Creates variable objects consisting of name and value
-        /// </summary>
-        public class Variable
-        {
-            public string Name { get; set; }
-            public object Value { get; set; }
-
-            public Variable(string name, object value)
-            {
-                Name = name;
-                Value = value;
-            }
-
-            public override string ToString()
-            {
-                return $"{Name} = {Value}";
             }
         }
 
