@@ -100,179 +100,94 @@ namespace ASE_ProgrammingLanguage
             //Dictionary<object, object> variables = new Dictionary<object, object>();
             foreach (Command command in commands)
             {
-                switch (command.Name.ToLower()) //to lower so commands arent cast sensative
+                if (command.Arguments.Count == 2)
                 {
-                    case "drawline":
-                        if (command.Arguments.Count == 2)
-                        {
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
-                            drawer.DrawLine(arg1, arg2);
-                        }
-                        else
-                        {
-                            new OtherException("invalid number of argument(s) for : DrawLine");
-                        }
-                        
-                        break;
+                    int arg1;
+                    int arg2; ;
+                    try
+                    {
+                        arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
+                        arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
 
-                    case "moveto":
-                        if (command.Arguments.Count == 2)
+                        switch (command.Name.ToLower())
                         {
+                            case "drawline":
+                                drawer.DrawLine(arg1, arg2);
+                                break;
+                            case "moveto":
+                                drawer.MoveTo(arg1, arg2);
+                                break;
+                            case "drawto":
+                                drawer.DrawTo(arg1, arg2);
+                                break;
+                            case "drawrectangle":
+                                drawer.DrawRectangle(arg1, arg2);
+                                break;
+                            case "drawtriangle":
+                                drawer.DrawTriangle(arg1, arg2);
+                                break;
+                        }
+                    }
+                    catch (InvalidCastException ice)
+                    {
+                        // Handle the exception caused by an invalid cast
+                        Console.WriteLine("Invalid cast: " + ice.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle other exceptions that might occur
+                        Console.WriteLine("An error occurred: " + ex.Message);
+                    }                   
+                }
+                else if (command.Arguments.Count == 1)
+                {
+                    object arg1 = GetValueOrDefault(command.Arguments[0], variables);
+                    try
+                    {
+                        switch (command.Name.ToLower())
+                        {
+                            case "drawcircle":
+                                drawer.DrawCircle((int)arg1);
+                                break;
+                            case "setpencolour":
+                                drawer.SetPenColour((string)(arg1));
+                                break;
+                            case "setbrushcolour":
+                                drawer.SetBrushColour((string)(arg1));
+                                break;
+                            case "clear":
+                                drawer.Clear();
+                                break;
+                            case "reset":
+                                drawer.Reset();
+                                break;
+                            case "enablefill":
+                                drawer.EnableFill();
+                                break;
+                            case "disablefill":
+                                drawer.DisableFill();
+                                break;
+                            default:
+                                new OtherException(command + " is not a valid command");
+                                break;
+                        }   
+                    }
+                    catch (InvalidCastException ice)
+                    {
+                        // Handle the exception caused by an invalid cast
+                        Console.WriteLine($"Invalid cast: " + ice.Message);
                             
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
-                            drawer.MoveTo(arg1, arg2);
-                        }
-                        else
-                        {
-                            new OtherException("invalid argument(s) for : MoveTo");
-                        }
-                        break;
-
-                    case "drawto":
-                        if (command.Arguments.Count == 2)
-                        {
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
-                            drawer.DrawTo(arg1, arg2);
-                        }
-                        else
-                        {
-                            new OtherException("invalid argument(s) for : DrawTo");
-                        }
-                        break;
-
-                    case "clear":
-                        drawer.Clear();
-                        break;
-
-                    case "reset":
-                        drawer.Reset();
-                        break;
-
-                    case "drawrectangle":
-                        if (command.Arguments.Count == 2)
-                        {
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
-                            drawer.DrawRectangle(arg1, arg2);
-                        }
-                        else
-                        {
-                            new OtherException($"invalid argument(s) for : DrawRectangle");
-                        }
-                        break;
-
-                    case "drawcircle":
-                        if (command.Arguments.Count == 1)
-                        {
-
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            drawer.DrawCircle(arg1);
-                        }
-                        else
-                        {
-                            new OtherException($"invalid argument(s) for : DrawCircle");
-                        }
-                        break;
-
-                    case "drawtriangle":
-                        if (command.Arguments.Count == 2)
-                        {
-                            int arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                            int arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
-                            drawer.DrawTriangle(arg1, arg2);
-                        }
-                        else
-                        {
-                            new OtherException($"invalid argument(s) for : DrawTriangle");
-                        }
-                        break;
-
-                    case "setpencolour":
-                        if (command.Arguments.Count == 1)
-                        {
-                            String arg1 = (String)GetValueOrDefault(command.Arguments[0], variables);
-                            drawer.SetPenColour(arg1);
-                        }
-                        else
-                        {
-                            new OtherException($"invalid argument(s) for : SetPenColour");
-                        }
-                        break;
-
-                    case "setbrushcolour":
-                        if (command.Arguments.Count == 1 && command.Arguments[0] is String)
-                        {
-                            String arg1 = (String)GetValueOrDefault(command.Arguments[0], variables);
-                            drawer.SetBrushColour(arg1);
-                        }
-                        else
-                        {
-                            new OtherException("invalid argument(s) for : SetBrushColour");
-                        }
-                        break;
-
-                    case "enablefill":
-                        drawer.EnableFill();
-                        break;
-
-                    case "disablefill":
-                        drawer.DisableFill();
-                        break;
-
-                    case "var":
-                        if (variables.ContainsKey(command.Arguments[0])) //checks if variable already exists
-                        {
-                            int currentValue = Convert.ToInt32(variables[command.Arguments[0]]);
-                            Match variableValueMatch = Regex.Match(Convert.ToString(command.Arguments[1]), @"^\s*([a-zA-Z_]\w*)\s*\+\s*([a-zA-Z_]\w*|\d+)\s*$");
-                            String var1 = variableValueMatch.Groups[1].Value;
-                            String var2 = variableValueMatch.Groups[2].Value;
-              
-                            //determine variable form i.e. Count = Count + 1
-                            if (command.Arguments[1] is int)
-                            {
-
-                                variables[command.Arguments[0]] = command.Arguments[1];
-                            }
-                            else if (variableValueMatch.Success)
-                            {
-
-                                String[] varValues = { var1, var2 };
-                                int totalVal = 0;
-                                foreach(String var in varValues)
-                                {
-                                    if (variables.ContainsKey(var))
-                                    {
-                                        totalVal += (int)variables[var];
-                                    }
-                                    else if (int.TryParse(var, out int intValue))
-                                    {
-                                        totalVal += intValue;
-                                    }
-                                    
-                                }
-                                variables[command.Arguments[0]] = totalVal;
-
-                            }
-                            else
-                            {
-                                variables[command.Arguments[0]] = command.Arguments[1];
-                            }
-
-    
-                        }
-                        else
-                        {
-                            //creates new variable
-                            variables.Add(command.Arguments[0], command.Arguments[1]);
-                        }
-                        break;
-
-                    default:
-                        new OtherException(command + " is not a valid command");
-                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle other exceptions that might occur
+                        Console.WriteLine("An error occurred: " + ex.Message);
+                    }
+        
+                }
+                else
+                {
+                    
                 }
 
             }
@@ -292,14 +207,12 @@ namespace ASE_ProgrammingLanguage
             foreach (string line in lines)
             {
                 // Use regular expression to match command structure and variable structure
-                //Console.WriteLine(line);
                 Match commandMatch = Regex.Match(line.Trim(), @"^(?!(endif|endloop)\s)(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
                 Match variableMatch = Regex.Match(line, @"^(?!(if|while)\s)(?<name>\w+)\s*=\s*(?<value>[^;]*)$");
                 String cArg1 = commandMatch.Groups["arg1"].Value;
                 String cArg2 = commandMatch.Groups["arg2"].Value;
                 if (commandMatch.Success)
                 {
-                    //Console.WriteLine("Command match: " + line);
                     string name = commandMatch.Groups["name"].Value;
                     string[] argsArray;
                     if (!string.IsNullOrWhiteSpace(cArg2))
@@ -311,7 +224,6 @@ namespace ASE_ProgrammingLanguage
                         argsArray = new string[] { cArg1 };
                     }
                     
-                    //Console.WriteLine($"Command: {name} {cArg1} {cArg2}");
                     List<object> arguments = new List<object>();
                     foreach (string arg in argsArray)
                     {
@@ -325,28 +237,78 @@ namespace ASE_ProgrammingLanguage
                         }
                     }
 
-                    parsedCommands.Add(new Command(name, arguments));
+                    parsedCommands.Add(CreateCommand(name, arguments));
                 }
                 else if (variableMatch.Success)
                 {
-                    //Console.WriteLine("Variable match: " + line);
+
                     string varName = variableMatch.Groups["name"].Value;
                     string varValueStr = variableMatch.Groups["value"].Value.Trim();
-
-                    //Console.WriteLine($"Variable: {varName} {varValueStr}");
-
                     List<object> values = new List<object>();
                     values.Add(varName); 
-                    if (int.TryParse(varValueStr, out int intValue))
+                    /*if (int.TryParse(varValueStr, out int intValue))
                     {
                         values.Add(intValue);
                     }
                     else
                     {
                         values.Add(varValueStr);
+                    }*/
+
+                    if (variables.ContainsKey(varName)) //checks if variable already exists
+                    {
+                        Match variableValueMatch = Regex.Match(varValueStr, @"^\s*([a-zA-Z_]\w*)\s*\+\s*([a-zA-Z_]\w*|\d+)\s*$");
+                        String var1 = variableValueMatch.Groups[1].Value;
+                        String var2 = variableValueMatch.Groups[2].Value;
+
+                        //determine variable form i.e. Count = Count + 1
+                        int intValue;
+                        if (int.TryParse(varValueStr, out intValue))
+                        {
+                            variables[varName] = intValue;
+                        }
+                        else if (variableValueMatch.Success)
+                        {
+
+                            string[] varValues = { var1, var2 };
+                            object[] objValues = { var1, var2 };
+                            int totalVal = 0;
+                            foreach (string var in varValues)
+                            {
+
+                                if (int.TryParse(var, out int intVar))
+                                {
+                                    totalVal += intVar; // Optionally accumulate the total
+                                }
+                                else if(variables.ContainsKey(var))
+                                {
+                                    totalVal += (int)variables[var];
+                                }
+                            }
+                            variables[varName] = totalVal;
+                            
+
+                        }
+                        else
+                        {
+                            variables[varName] = varValueStr;
+                        }
+
+
                     }
-                    
-                    parsedCommands.Add(new Command("var", values));
+                    else if(int.TryParse(varValueStr, out int intVar))
+                    {
+
+                        variables.Add(varName, intVar);
+
+                    }
+                    else
+                    {
+                        //creates new variable
+                        variables.Add(varName, varValueStr);
+                    }
+
+                    //parsedCommands.Add(CreateCommand("var", values));
 
                 }
                     
@@ -356,11 +318,7 @@ namespace ASE_ProgrammingLanguage
             }
 
             commands = parsedCommands;
-            /*foreach (Command item in commands)
-            {
-                Console.WriteLine(item.Name);
-
-            }*/
+            
             ExecuteCommands();
         }
         /// <summary>
@@ -427,7 +385,7 @@ namespace ASE_ProgrammingLanguage
 
 
                             case "<":
-                                Console.WriteLine(FormatBlock(ConvertListToString(blocks[0])));
+                                //Console.WriteLine(FormatBlock(ConvertListToString(blocks[0])));
                                 // Handle less than comparison
                                 while (Convert.ToInt32(variables[variable]) < int.Parse(value))
                                 {
@@ -487,12 +445,10 @@ namespace ASE_ProgrammingLanguage
                     }
                 }
             }
-
             else if (AssertIteration(ConvertListToString(blocks[0])) == "NonVar" || AssertIteration(ConvertListToString(blocks[0])) == "NonMatch")
             {
                 blocks = new List<List<string>>();
             }
-
             else
             {
 
@@ -822,6 +778,11 @@ namespace ASE_ProgrammingLanguage
                 // If the argument is neither an int nor a string nor a valid variable, throw an ArgumentException
                 throw new ArgumentException($"Invalid argument: {argument}", nameof(argument));
             }
+        }
+
+        private Command CreateCommand(string name, List<object> arguments)
+        {
+            return CommandFactory.CreateCommand(name, arguments);
         }
     }
 }
