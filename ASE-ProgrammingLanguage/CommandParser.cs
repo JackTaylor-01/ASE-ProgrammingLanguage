@@ -97,7 +97,6 @@ namespace ASE_ProgrammingLanguage
         /// </summary>
         public void ExecuteCommands()
         {
-            //Dictionary<object, object> variables = new Dictionary<object, object>();
             foreach (Command command in commands)
             {
                 if (command.Arguments.Count == 2)
