@@ -21,11 +21,15 @@ namespace ASE_ProgrammingLanguage
     /// </summary>
     internal class CommandParser
     {
+        private static CommandParser instance;
+
         private List<Command> commands;
         Dictionary<object, object> variables = new Dictionary<object, object>();
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
+
+        
         /// <summary>
         /// Constructor constructs drawer from given graphics and instansiates Open file / Save file
         /// </summary>
@@ -47,6 +51,18 @@ namespace ASE_ProgrammingLanguage
             saveFileDialog.FilterIndex = 1;
             saveFileDialog.RestoreDirectory = true;
 
+        }
+        public static CommandParser Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    // Create the instance if it doesn't exist
+                    instance = new CommandParser(new Drawer(Graphics.FromImage(new Bitmap(451, 375))));
+                }
+                return instance;
+            }
         }
 
         /// <summary>
