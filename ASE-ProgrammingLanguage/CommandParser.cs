@@ -52,6 +52,18 @@ namespace ASE_ProgrammingLanguage
             saveFileDialog.RestoreDirectory = true;
 
         }
+        /// <summary>
+        /// Provides a singleton instance of the <see cref="CommandParser"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This property ensures that only one instance of the <see cref="CommandParser"/> is created.
+        /// </remarks>
+        /// <example>
+        /// Example usage to access the singleton instance:
+        /// <code>
+        /// var parser = CommandParser.Instance;
+        /// </code>
+        /// </example>
         public static CommandParser Instance
         {
             get
@@ -64,7 +76,6 @@ namespace ASE_ProgrammingLanguage
                 return instance;
             }
         }
-
         /// <summary>
         /// Uses file dialog to open files
         /// </summary>
@@ -83,7 +94,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 catch (Exception ex)
                 {
-                    new OtherException("Error opening file");
+                   throw new OtherException($"Error opening file: {ex.Message}", ex);
                 }
             }
             return null;
@@ -104,7 +115,7 @@ namespace ASE_ProgrammingLanguage
             }
             catch (Exception ex)
             {
-                new OtherException("Error saving file");
+                throw new OtherException($"Error saving file: {ex.Message}", ex);
             }
 
         }
@@ -143,15 +154,15 @@ namespace ASE_ProgrammingLanguage
                                 break;
                         }
                     }
-                    catch (InvalidCastException ice)
+                    catch (InvalidCastException ex)
                     {
                         // Handle the exception caused by an invalid cast
-                        Console.WriteLine("Invalid cast: " + ice.Message);
+                        throw new OtherException($"Invalid cast: {ex.Message}", ex);
                     }
                     catch (Exception ex)
                     {
                         // Handle other exceptions that might occur
-                        Console.WriteLine("An error occurred: " + ex.Message);
+                        throw new OtherException($"An error occurred: {ex.Message}", ex);
                     }                   
                 }
                 else if (command.Arguments.Count == 1)
@@ -187,16 +198,16 @@ namespace ASE_ProgrammingLanguage
                                 break;
                         }   
                     }
-                    catch (InvalidCastException ice)
+                    catch (InvalidCastException ex)
                     {
                         // Handle the exception caused by an invalid cast
-                        Console.WriteLine($"Invalid cast: " + ice.Message);
+                        throw new OtherException($"Invalid cast: {ex.Message}", ex);
                             
                     }
                     catch (Exception ex)
                     {
                         // Handle other exceptions that might occur
-                        Console.WriteLine("An error occurred: " + ex.Message);
+                        throw new OtherException($"An error occurred: {ex.Message}", ex);
                     }
         
                 }
@@ -329,8 +340,6 @@ namespace ASE_ProgrammingLanguage
                         variables.Add(varName, varValueStr);
                     }
 
-                    //parsedCommands.Add(CreateCommand("var", values));
-
                 }
          
 
@@ -460,7 +469,7 @@ namespace ASE_ProgrammingLanguage
 
                     else
                     {
-                        new OtherException($"The variable you are trying to process does not exist {variable}");
+                       throw new OtherException($"The variable you are trying to process does not exist: {variable}");
                     }
                 }
             }
@@ -587,7 +596,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 else
                 {
-                    Console.WriteLine("Throw exception");
+                    throw new OtherException($"Invalid selection statement: {lines[0]}");
                 }
             }
 
@@ -687,7 +696,7 @@ namespace ASE_ProgrammingLanguage
                 }
                 else
                 {
-                    Console.WriteLine("Throw exception");
+                    throw new OtherException($"Invalid iteration statement: {lines[0]}");
                 }
             }
             return "false";
@@ -725,29 +734,6 @@ namespace ASE_ProgrammingLanguage
 
             return result;
         }
-
-        /// <summary>
-        /// List object command with the arguments Name and arguments
-        /// </summary>
-        public class Command
-        {
-            public string Name { get; set; }
-            public List<object> Arguments { get; set; }
-
-            public Command(string name, List<object> arguments)
-            {
-                Name = name;
-                Arguments = arguments;
-
-            }
-
-            public override string ToString()
-            {
-                string args = string.Join(", ", Arguments);
-                return $"{Name}({args})";
-            }
-        }
-
         /// <summary>
         /// Gets the value from either the variables dictionary or uses the argument directly if it's an int or string.
         /// </summary>
@@ -775,13 +761,40 @@ namespace ASE_ProgrammingLanguage
             else
             {
                 // If the argument is neither an int nor a string nor a valid variable, throw an ArgumentException
-                throw new ArgumentException($"Invalid argument: {argument}", nameof(argument));
+                throw new OtherException($"Invalid argument: {argument}");
             }
         }
-
+        /// <summary>
+        /// Creates a new command instance based on the provided name and arguments.
+        /// </summary>
+        /// <param name="name">The name of the command.</param>
+        /// <param name="arguments">The list of arguments for the command.</param>
+        /// <returns>A new instance of the <see cref="Command"/> class.</returns>
         private Command CreateCommand(string name, List<object> arguments)
         {
             return CommandFactory.CreateCommand(name, arguments);
         }
+        /// <summary>
+        /// List object command with the arguments Name and arguments
+        /// </summary>
+        public class Command
+        {
+            public string Name { get; set; }
+            public List<object> Arguments { get; set; }
+
+            public Command(string name, List<object> arguments)
+            {
+                Name = name;
+                Arguments = arguments;
+
+            }
+
+            public override string ToString()
+            {
+                string args = string.Join(", ", Arguments);
+                return $"{Name}({args})";
+            }
+        }
+
     }
 }

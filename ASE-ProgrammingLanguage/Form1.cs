@@ -17,7 +17,9 @@ namespace ASE_ProgrammingLanguage
         Drawer drawer;
         CommandParser cmdParser;
         String cmdWindowTxt, cmdLineTxt;
-        //new DrawerTests(drawer);
+        /// <summary>
+        /// Represents the main form of the application.
+        /// </summary>
         public Form1()
         {
             InitializeComponent();
@@ -29,18 +31,30 @@ namespace ASE_ProgrammingLanguage
         {
 
         }
-
+        /// <summary>
+        /// Handles the TextChanged event of the cmdWindow control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void cmdWindow_TextChanged(object sender, EventArgs e)
         {
             cmdWindowTxt = cmdWindow.Text;
 
         }
-
+        /// <summary>
+        /// Handles the TextChanged event of the cmdLine control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void cmdLine_TextChanged(object sender, EventArgs e)
         {
             cmdLineTxt = cmdLine.Text;
         }
-
+        /// <summary>
+        /// Handles the Click event of the buttonRun control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonRun_Click(object sender, EventArgs e)
         {
 
@@ -60,7 +74,7 @@ namespace ASE_ProgrammingLanguage
             else
             {
                 //throw exception
-                new OtherException("Please enter commands into command line before running");
+                new OtherException("cannot run using null command");
             }
            
         }
@@ -75,19 +89,31 @@ namespace ASE_ProgrammingLanguage
             
 
         }
-
+        /// <summary>
+        /// Handles the Paint event of the drawOutput control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
         private void drawOutput_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             g.DrawImageUnscaled(DrawingBitmap, 0, 0);
 
         }
-
+        /// <summary>
+        /// Handles the Click event of the buttonOpen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonOpen_Click(object sender, EventArgs e)
         {
             cmdWindow.Text = cmdParser.OpenFile();
         }
-
+        /// <summary>
+        /// Handles the Click event of the buttonSave control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonSave_Click(object sender, EventArgs e)
         {
             cmdParser.SaveFile(cmdWindowTxt);
