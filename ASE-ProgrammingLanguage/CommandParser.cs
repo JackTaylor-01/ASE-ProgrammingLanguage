@@ -82,22 +82,21 @@ namespace ASE_ProgrammingLanguage
         /// <returns>The content of an opened file or null if an error happens </returns>
         public string OpenFile()
         {
+            
+            try
             {
-                try
-                {
-                    // Read the content from the selected file
-                    openFileDialog.ShowDialog();
-                    string filePath = openFileDialog.FileName;
-                    string content = System.IO.File.ReadAllText(filePath);
-                    Console.WriteLine($"File opened successfully: {filePath}");
-                    return content;
-                }
-                catch (Exception ex)
-                {
-                   throw new OtherException($"Error opening file: {ex.Message}", ex);
-                }
+                // Read the content from the selected file
+                openFileDialog.ShowDialog();
+                string filePath = openFileDialog.FileName;
+                string content = System.IO.File.ReadAllText(filePath);
+                Console.WriteLine($"File opened successfully: {filePath}");
+                return content;
             }
-            return null;
+            catch (Exception ex)
+            {
+                throw new OtherException($"Error opening file: {ex.Message}", ex);
+            }
+
         }
         /// <summary>
         /// Saves provided program to a file
@@ -524,19 +523,38 @@ namespace ASE_ProgrammingLanguage
                 if (selectionMatch.Success)
                 {
 
-                    string variable = selectionMatch.Groups[1].Value.Trim();
+                    string val1 = selectionMatch.Groups[1].Value.Trim();
                     string comparisonOperator = selectionMatch.Groups[2].Value;
-                    string value = selectionMatch.Groups[3].Value;
+                    string val2 = selectionMatch.Groups[3].Value;
 
-                    if (variables.ContainsKey(variable))
+                    string[] varValues = { val1, val2 };
+                    int[] intVarValues = { 0, 0 };
+                    int intVar1;
+                    int intVar2;
+                    for (int i = 0; i < varValues.Length; i++)
                     {
+                        if (int.TryParse(varValues[i], out int intVar))
+                        {
+                            intVarValues[i] = intVar;
+                        }
+                        else if (variables.ContainsKey(varValues[i]))
+                        {
+                            intVarValues[i] = (int)variables[varValues[i]];
+                        }
+
+                    }
+                    intVar1 = intVarValues[0];
+                    intVar2 = intVarValues[1];
+
+                    /*if (variables.ContainsKey(variable))
+                    {*/
 
                         // Process the condition based on the comparison operator
                         switch (comparisonOperator.Trim())
                         {
                             case "==":
                                 // Handle equality comparison
-                                if (Convert.ToInt32(variables[variable]) == int.Parse(value))
+                                if (intVar1 == intVar2)
                                 {
                                     return "true";
                                 }
@@ -547,7 +565,7 @@ namespace ASE_ProgrammingLanguage
 
                             case "<":
                                 // Handle less than comparison
-                                if (Convert.ToInt32(variables[variable]) < int.Parse(value))
+                                if (intVar1 < intVar2)
                                 {
                                     return "true";
                                 }
@@ -559,7 +577,7 @@ namespace ASE_ProgrammingLanguage
 
                             case ">":
                                 // Handle equality comparison
-                                if (Convert.ToInt32(variables[variable]) > int.Parse(value))
+                                if (intVar1 > intVar2)
                                 {
 
                                     return "true";
@@ -572,7 +590,7 @@ namespace ASE_ProgrammingLanguage
 
                             case "!=":
                                 // Handle equality comparison
-                                if (Convert.ToInt32(variables[variable]) != int.Parse(value))
+                                if (intVar1 != intVar2)
                                 {
                                     return "true";
                                 }
@@ -588,11 +606,11 @@ namespace ASE_ProgrammingLanguage
                                 Console.WriteLine("Invalid comparison operator");
                                 return "NonMatch";
                         }
-                    }
-                    else
+                    //}
+                    /*else
                     {
                         return "NonVar";
-                    }
+                    }*/
                 }
                 else
                 {
@@ -729,6 +747,10 @@ namespace ASE_ProgrammingLanguage
             // Trim 3 whitespaces from each line
             newLines = newLines.Select(newLine => newLine.Substring(3)).ToArray();
 
+            if (newLines.Any(newLine => newLine.TakeWhile(char.IsWhiteSpace).ToArray().Length % 3 != 0))
+            {
+                throw new OtherException("Incorrect identation");
+            }
             // Join the modified lines back into a string
             string result = string.Join("\n", newLines);
 

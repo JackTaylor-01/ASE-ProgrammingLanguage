@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace ASE_ProgrammingLanguage
 {
+    /// <summary>
+    /// Main entry way in to program
+    /// </summary>
     public partial class Form1 : Form
     {
         Bitmap DrawingBitmap = new Bitmap(451, 375);

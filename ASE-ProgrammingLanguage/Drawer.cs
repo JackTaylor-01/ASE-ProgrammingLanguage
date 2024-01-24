@@ -12,11 +12,23 @@ namespace ASE_ProgrammingLanguage
     /// </summary>
     public class Drawer
     {
+        /// <summary>
+        /// The graphics object used for drawing on the picture box.
+        /// </summary>
         Graphics g;
+        /// <summary>
+        /// The pen used for drawing lines and shapes.
+        /// </summary>
         public Pen pen;
+        /// <summary>
+        /// The X-coordinate of the current drawing position and Y-coordinate.
+        /// </summary>
         public int xPos, yPos;
-        Brush brush;
+        /// <summary>
+        /// Determines whether shapes should be filled or not.
+        /// </summary>
         public bool fill = false;
+        Brush brush;
         /// <summary>
         /// Initialises <see cref="Drawer"/> class
         /// </summary>
@@ -107,9 +119,10 @@ namespace ASE_ProgrammingLanguage
             }
         }
         /// <summary>
-        /// Draws triangle 
+        /// Draws triangle
         /// </summary>
-        /// <param name="sideLength"> Length of the sides of the triangle</param>
+        /// <param name="tbase"> triangles base length</param>
+        /// <param name="adj">triangles adjacent length</param>
         public void DrawTriangle(int tbase, int adj)
         {
             Point[] trianglePoints = {
