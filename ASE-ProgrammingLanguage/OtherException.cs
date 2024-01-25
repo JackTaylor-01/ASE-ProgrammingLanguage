@@ -12,7 +12,7 @@ namespace ASE_ProgrammingLanguage
     /// <summary>
     /// Exception handler for custom exceptions
     /// </summary>
-    internal class OtherException : Exception
+    public class OtherException : Exception
     {
         public OtherException() : base()
         {

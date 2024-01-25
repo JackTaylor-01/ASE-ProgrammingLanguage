@@ -20,13 +20,13 @@ namespace ASE_ProgrammingLanguage
     /// <summary>
     /// Class for parsing commands
     /// </summary>
-    internal class CommandParser
+    public class CommandParser
     {
         private static CommandParser instance;
 
-        private List<Command> commands;
-        private List<Method> methods = new List<Method>();
-        Dictionary<object, object> variables = new Dictionary<object, object>();
+        public List<ICommand> commands;
+        public List<ICommand> methods = new List<ICommand>();
+        public Dictionary<object, object> variables = new Dictionary<object, object>();
         Drawer drawer;
         OpenFileDialog openFileDialog;
         SaveFileDialog saveFileDialog;
@@ -127,16 +127,16 @@ namespace ASE_ProgrammingLanguage
         {
             foreach (Command command in commands)
             {
-                if (command.Arguments.Count == 2)
+                if (command.GetArguments().Count == 2)
                 {
                     int arg1;
                     int arg2; ;
                     try
                     {
-                        arg1 = (int)GetValueOrDefault(command.Arguments[0], variables);
-                        arg2 = (int)GetValueOrDefault(command.Arguments[1], variables);
+                        arg1 = (int)GetValueOrDefault(command.GetArguments()[0], variables);
+                        arg2 = (int)GetValueOrDefault(command.GetArguments()[1], variables);
 
-                        switch (command.Name.ToLower())
+                        switch (command.GetName().ToLower())
                         {
                             case "drawline":
                                 drawer.DrawLine(arg1, arg2);
@@ -166,22 +166,32 @@ namespace ASE_ProgrammingLanguage
                         throw new OtherException($"An error occurred: {ex.Message}", ex);
                     }                   
                 }
-                else if (command.Arguments.Count == 1)
+                else if (command.GetArguments().Count == 1)
                 {
-                    //Checks if method of same name exists
-                    Method method = methods.FirstOrDefault(obj => obj.MethodName == command.Name);
+                    //Checks if method of same name exists               
+                    Method method = null;
+
+                    foreach (ICommand obj in methods)
+                    {
+                        if (obj is ICommand && ((Method)obj).GetName() == command.GetName())
+                        {
+                            method = (Method)obj;
+                            break; // exit the loop when a match is found
+                        }
+                    }
+
                     if (method != null)
                     {
-                        Console.WriteLine($"Executing block: {method.Block}");
-                        CommandBlocker commandBlocker = new CommandBlocker(method.Block);
+                        Console.WriteLine($"Executing block: {method.GetBlock()}");
+                        CommandBlocker commandBlocker = new CommandBlocker(method.GetBlock());
                         BlockType(commandBlocker.commandBlocks);
                     }
                     else
                     {
-                        object arg1 = GetValueOrDefault(command.Arguments[0], variables);
+                        object arg1 = GetValueOrDefault(command.GetArguments()[0], variables);
                         try
                         {
-                            switch (command.Name.ToLower())
+                            switch (command.GetName().ToLower())
                             {
                                 case "drawcircle":
                                     drawer.DrawCircle((int)arg1);
@@ -205,7 +215,7 @@ namespace ASE_ProgrammingLanguage
                                     drawer.DisableFill();
                                     break;
                                 default:
-                                    new OtherException(command + " is not a valid command");
+                                    new OtherException(command + " is not a valid command or method");
                                     break;
                             }
                         }
@@ -237,7 +247,7 @@ namespace ASE_ProgrammingLanguage
         /// <param name="input"></param>
         public void ParseCommands(string input)
         {
-            List<Command> parsedCommands = new List<Command>();
+            List<ICommand> parsedCommands = new List<ICommand>();
 
             // Split input into lines and iterate through each line
             string[] lines = input.Split('\n');
@@ -275,7 +285,7 @@ namespace ASE_ProgrammingLanguage
                         }
                     }
 
-                    parsedCommands.Add(CreateCommand(name, arguments));
+                    parsedCommands.Add(Factory.CreateProduct("Command", name, arguments));
                 }
                 else if (variableMatch.Success)
                 {
@@ -354,12 +364,14 @@ namespace ASE_ProgrammingLanguage
                     }
 
                 }
+                new OtherException("Invalid variable or command");
+               
          
 
             }
 
             commands = parsedCommands;
-            
+           
             ExecuteCommands();
         }
         /// <summary>
@@ -499,7 +511,7 @@ namespace ASE_ProgrammingLanguage
                 if (methodMatch.Success)
                 {
                     Console.WriteLine(formattedBlock);
-                    methods.Add(CreateMethod(methodMatch.Groups[1].Value, methodMatch.Groups[2].Value, formattedBlock));
+                    methods.Add(Factory.CreateProduct("Method", methodMatch.Groups[1].Value, new List<object> { methodMatch.Groups[2].Value, formattedBlock }));
                 }
 
             }
@@ -825,59 +837,7 @@ namespace ASE_ProgrammingLanguage
                 throw new OtherException($"Invalid argument: {argument}");
             }
         }
-        /// <summary>
-        /// Creates a new command instance based on the provided name and arguments.
-        /// </summary>
-        /// <param name="name">The name of the command.</param>
-        /// <param name="arguments">The list of arguments for the command.</param>
-        /// <returns>A new instance of the <see cref="Command"/> class.</returns>
-        private Command CreateCommand(string name, List<object> arguments)
-        {
-            return CommandFactory.CreateCommand(name, arguments);
-        }
-        /// <summary>
-        /// List object command with the arguments Name and arguments
-        /// </summary>
-        public class Command
-        {
-            public string Name { get; set; }
-            public List<object> Arguments { get; set; }
-
-            public Command(string name, List<object> arguments)
-            {
-                Name = name;
-                Arguments = arguments;
-
-            }
-
-            public override string ToString()
-            {
-                string args = string.Join(", ", Arguments);
-                return $"{Name}({args})";
-            }
-        }
-        private Method CreateMethod(string name, string parameters, string block)
-        {
-            return MethodFactory.CreateMethod(name, parameters, block);
-        }
-        public class Method
-        {
-            public string MethodName { get; set; }
-            public string Parameters { get; set; }
-            public string Block { get; set; }
-
-            public Method(string methodName, string parameters, string block)
-            {
-                MethodName = methodName;
-                Parameters = parameters;
-                Block = block;
-            }
-            public override string ToString()
-            {
-                string args = string.Join(", ", Parameters);
-                return $"{MethodName}({args})";
-            }
-        }
+        
 
     }
 }

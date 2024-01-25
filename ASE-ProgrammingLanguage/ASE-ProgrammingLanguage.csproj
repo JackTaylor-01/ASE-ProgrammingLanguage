@@ -47,18 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
     <Compile Include="CommandBlocker.cs" />
-    <Compile Include="CommandFactory.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Drawer.cs" />
+    <Compile Include="FactoryClass.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="MethodFactory.cs" />
     <Compile Include="OtherException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
