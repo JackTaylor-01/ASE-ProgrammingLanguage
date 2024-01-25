@@ -542,6 +542,12 @@ namespace ASE_ProgrammingLanguage
             }
             return returnString;
         }
+        /// <summary>
+        /// Asserts whether is a line is a method
+        /// </summary>
+        /// <param name="block">is string block encapsulated within method</param>
+        /// <returns>string</returns>
+        /// <exception cref="OtherException"></exception>
         public String AssertMethod(string block)
         {
             string[] lines = block.Split('\n');
