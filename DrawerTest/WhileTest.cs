@@ -5,12 +5,18 @@ using System.Reflection;
 
 namespace DrawerTest
 {
+    /// <summary>
+    /// Unit tests for the <see cref="CommandParser"/> class related to while statements.
+    /// </summary>
     [TestClass]
     public class WhileTest
     {
         private CommandParser commandParser;
         private TestContext testContextInstance;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WhileTest"/> class.
+        /// </summary>
         [TestInitialize]
         public void TestInitialize()
         {
@@ -23,6 +29,9 @@ namespace DrawerTest
             commandParser.GetType().GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).SetValue(null, null);
         }
 
+        /// <summary>
+        /// Gets or sets the test context.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -35,6 +44,9 @@ namespace DrawerTest
             }
         }
 
+        /// <summary>
+        /// Asserts iteration when a while statement has a true condition, expecting the result to be "true".
+        /// </summary>
         public void AssertIteration_WhenWhileStatementWithTrueCondition_ShouldReturnTrue()
         {
             // Arrange
@@ -49,6 +61,9 @@ namespace DrawerTest
             Assert.AreEqual("true", result);
         }
 
+        /// <summary>
+        /// Asserts iteration when a while statement has a false condition, expecting the result to be "NonMatch".
+        /// </summary>
         [TestMethod]
         public void AssertIteration_WhenWhileStatementWithFalseCondition_ShouldReturnNonMatch()
         {
@@ -64,6 +79,9 @@ namespace DrawerTest
             Assert.AreEqual("NonMatch", result);
         }
 
+        /// <summary>
+        /// Asserts iteration when a while statement references an undefined variable, expecting the result to be "NonVar".
+        /// </summary>
         [TestMethod]
         public void AssertIteration_WhenWhileStatementWithUndefinedVariable_ShouldReturnNonVar()
         {
@@ -77,11 +95,13 @@ namespace DrawerTest
             Assert.AreEqual("NonVar", result);
         }
 
+        /// <summary>
+        /// Asserts iteration when an invalid while statement is provided, expecting an <see cref="OtherException"/> to be thrown.
+        /// </summary>
         [TestMethod]
         public void AssertIteration_WhenInvalidWhileStatement_ShouldThrowOtherException()
         {
             // Arrange
-
             string invalidWhileStatement = "while invalid statement";
 
             // Act & Assert

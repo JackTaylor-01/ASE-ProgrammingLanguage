@@ -9,22 +9,28 @@ using System.Reflection;
 namespace DrawerTest
 {
     /// <summary>
-    /// Summary description for VariablesTest
+    /// Unit tests for the <see cref="CommandParser"/> class related to variable parsing.
     /// </summary>
     [TestClass]
     public class VariablesTest
     {
         private CommandParser commandParser;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VariablesTest"/> class.
+        /// </summary>
         public VariablesTest()
         {
             //
             // TODO: Add constructor logic here
             //
-
         }
 
         private TestContext testContextInstance;
 
+        /// <summary>
+        /// Initializes test context and resets the state of the <see cref="CommandParser"/> before each test.
+        /// </summary>
         [TestInitialize]
         public void TestInitialize()
         {
@@ -38,9 +44,8 @@ namespace DrawerTest
         }
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -52,35 +57,13 @@ namespace DrawerTest
                 testContextInstance = value;
             }
         }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-
+        /// <summary>
+        /// Tests parsing a valid variable, expecting successful parsing and storage in the <see cref="CommandParser"/> variables.
+        /// </summary>
         [TestMethod]
         public void ParseCommands_WhenGivenValidVariable_ShouldParseSuccessfully()
         {
             // Arrange
-            var variablesTest = new VariablesTest();
             string input = "varName = 10";
 
             // Act
@@ -90,20 +73,18 @@ namespace DrawerTest
             Assert.IsNotNull(commandParser.variables);
             Assert.IsTrue(commandParser.variables.ContainsKey("varName"));
             Assert.AreEqual(10, commandParser.variables["varName"]);
-
         }
 
+        /// <summary>
+        /// Tests parsing an invalid variable, expecting the <see cref="CommandParser"/> to handle it gracefully.
+        /// </summary>
         [TestMethod]
         public void ParseCommands_WhenGivenInvalidVariable_ShouldHandleGracefully()
         {
             // Arrange
-            var variablesTest = new VariablesTest();
             string input = "var == 60";
 
-            // Act
-            commandParser.ParseCommands(input);
-
-            // Assert
+            // Act & Assert
             try
             {
                 commandParser.ParseCommands(input);
@@ -115,7 +96,6 @@ namespace DrawerTest
                 // Log or handle the exception
                 Console.WriteLine($"Exception caught: {ex.Message}");
             }
-
         }
     }
 }
