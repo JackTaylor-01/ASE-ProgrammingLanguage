@@ -30,16 +30,31 @@ namespace ASE_ProgrammingLanguage
             Stack<List<string>> blockStack = new Stack<List<string>>();
             List<string> soloBlocks = new List<string>();
             bool insideBlock = false; // New variable to track if inside a block
-
+            bool insideIf = false;
+            bool insideWhile = false;
+            string statementType;
             foreach (string line in lines)
             {
                 string trimmedLine = line.TrimEnd();
 
                 // Check if the line contains "If" or "While" at the beginning
-                if (Regex.IsMatch(trimmedLine, @"^\b(If|While)\b"))
+                Match openStatementMatch = Regex.Match(trimmedLine, @"^\b(If|While)\b");
+                Match closeStatementMatch = Regex.Match(trimmedLine, @"^\b(Endif|Endloop)\b");
+
+                if (openStatementMatch.Success)
                 {
+                    statementType = openStatementMatch.Groups[1].Value.ToLower();
                     if (!insideBlock) // Check if not already inside a block
                     {
+                        switch (statementType)
+                        {
+                            case "if":
+                                insideIf = true;
+                                break;
+                            case "while":
+                                insideWhile = true; 
+                                break;
+                        }
                         List<string> block = new List<string> { trimmedLine };
                         commandBlocks.Add(soloBlocks);
                         blockStack.Push(block);
@@ -53,11 +68,22 @@ namespace ASE_ProgrammingLanguage
                         currentBlock.Add(trimmedLine);
                     }
                 }
-                
+
                 // Check if the line contains "Endif" or "Endloop" at the beginning
-                else if (Regex.IsMatch(trimmedLine, @"^\b(Endif|Endloop)\b"))
+              
+                else if (closeStatementMatch.Success)
                 {
-                    if (blockStack.Count > 0)
+                    statementType = closeStatementMatch.Groups[1].Value.ToLower();
+                    switch (statementType)
+                    {
+                        case "endif":
+                            insideIf = false;
+                            break;
+                        case "endloop":
+                            insideWhile = false;
+                            break;
+                    }
+                    if (blockStack.Count > 0 && insideIf == false && insideWhile == false)
                     {
                         List<string> currentBlock = blockStack.Pop();
                         currentBlock.Add(trimmedLine);
@@ -67,7 +93,7 @@ namespace ASE_ProgrammingLanguage
                     else
                     {
                         // Handle error: unexpected "Endif" or "Endloop"
-                        Console.WriteLine("Error: Unexpected " + trimmedLine);
+                        throw new OtherException($"Invalid {trimmedLine} incorrect ending statement");
                     }
                 }
                 // Check if the line is inside a block
