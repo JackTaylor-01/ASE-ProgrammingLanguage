@@ -364,9 +364,7 @@ namespace ASE_ProgrammingLanguage
                     }
 
                 }
-                new OtherException("Invalid variable or command");
-               
-         
+
 
             }
 
