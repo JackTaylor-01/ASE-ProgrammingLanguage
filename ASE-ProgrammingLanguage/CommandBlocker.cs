@@ -32,14 +32,15 @@ namespace ASE_ProgrammingLanguage
             bool insideBlock = false; // New variable to track if inside a block
             bool insideIf = false;
             bool insideWhile = false;
+            bool insideMethod = false;
             string statementType;
             foreach (string line in lines)
             {
                 string trimmedLine = line.TrimEnd();
 
                 // Check if the line contains "If" or "While" at the beginning
-                Match openStatementMatch = Regex.Match(trimmedLine, @"^\b(If|While)\b");
-                Match closeStatementMatch = Regex.Match(trimmedLine, @"^\b(Endif|Endloop)\b");
+                Match openStatementMatch = Regex.Match(trimmedLine, @"^\b(If|While|method)\b");
+                Match closeStatementMatch = Regex.Match(trimmedLine, @"^\b(Endif|Endloop|endmethod)\b");
 
                 if (openStatementMatch.Success)
                 {
@@ -54,6 +55,10 @@ namespace ASE_ProgrammingLanguage
                             case "while":
                                 insideWhile = true; 
                                 break;
+                            case "method":
+                                insideMethod = true;
+                                break;
+                              
                         }
                         List<string> block = new List<string> { trimmedLine };
                         commandBlocks.Add(soloBlocks);
@@ -81,6 +86,9 @@ namespace ASE_ProgrammingLanguage
                             break;
                         case "endloop":
                             insideWhile = false;
+                            break;
+                        case "method":
+                            insideMethod = false;
                             break;
                     }
                     if (blockStack.Count > 0 && insideIf == false && insideWhile == false)

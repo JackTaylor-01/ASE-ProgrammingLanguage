@@ -1,0 +1,48 @@
+MoveTo 50, 50
+DrawLine 100, 100
+var1 = 30
+DrawCircle var1
+SetPenColour Blue
+method myMethod()
+   MoveTo 0,0
+   DrawCircle 10
+   If var1 > 200
+      var3 = Red
+      SetBrushColour Red 
+      EnableFill
+      DrawTriangle 50,50
+      DrawTo 150, 80
+      Disablefill
+   Endif
+   DrawCircle 20
+   DrawCircle 50
+endmethod
+DrawTo 200, 250
+var1 = 300
+var2 = 92
+DrawRectangle 40, 60
+If var1 > 200
+   var3 = Red
+   SetBrushColour Red 
+   EnableFill
+   DrawTriangle 50,50
+   DrawTo 150, 80
+   Disablefill
+Endif
+count = 0
+While count < 100
+   DrawCircle count
+   MoveTo 270, 300
+   If count == 5
+      DrawCircle 100
+   Endif
+   count = count + 10
+Endloop 
+DrawCircle 50
+moveto 100,100
+drawrectangle 100,50
+enablefill 
+moveto 200,200
+drawrectangle 30,80
+DrawLine var1,var2
+myMethod

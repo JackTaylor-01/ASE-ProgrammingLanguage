@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
@@ -24,6 +25,7 @@ namespace ASE_ProgrammingLanguage
         private static CommandParser instance;
 
         private List<Command> commands;
+        private List<Method> methods = new List<Method>();
         Dictionary<object, object> variables = new Dictionary<object, object>();
         Drawer drawer;
         OpenFileDialog openFileDialog;
@@ -166,48 +168,60 @@ namespace ASE_ProgrammingLanguage
                 }
                 else if (command.Arguments.Count == 1)
                 {
-                    object arg1 = GetValueOrDefault(command.Arguments[0], variables);
-                    try
+                    //Checks if method of same name exists
+                    Method method = methods.FirstOrDefault(obj => obj.MethodName == command.Name);
+                    if (method != null)
                     {
-                        switch (command.Name.ToLower())
+                        Console.WriteLine($"Executing block: {method.Block}");
+                        CommandBlocker commandBlocker = new CommandBlocker(method.Block);
+                        BlockType(commandBlocker.commandBlocks);
+                    }
+                    else
+                    {
+                        object arg1 = GetValueOrDefault(command.Arguments[0], variables);
+                        try
                         {
-                            case "drawcircle":
-                                drawer.DrawCircle((int)arg1);
-                                break;
-                            case "setpencolour":
-                                drawer.SetPenColour((string)(arg1));
-                                break;
-                            case "setbrushcolour":
-                                drawer.SetBrushColour((string)(arg1));
-                                break;
-                            case "clear":
-                                drawer.Clear();
-                                break;
-                            case "reset":
-                                drawer.Reset();
-                                break;
-                            case "enablefill":
-                                drawer.EnableFill();
-                                break;
-                            case "disablefill":
-                                drawer.DisableFill();
-                                break;
-                            default:
-                                new OtherException(command + " is not a valid command");
-                                break;
-                        }   
+                            switch (command.Name.ToLower())
+                            {
+                                case "drawcircle":
+                                    drawer.DrawCircle((int)arg1);
+                                    break;
+                                case "setpencolour":
+                                    drawer.SetPenColour((string)(arg1));
+                                    break;
+                                case "setbrushcolour":
+                                    drawer.SetBrushColour((string)(arg1));
+                                    break;
+                                case "clear":
+                                    drawer.Clear();
+                                    break;
+                                case "reset":
+                                    drawer.Reset();
+                                    break;
+                                case "enablefill":
+                                    drawer.EnableFill();
+                                    break;
+                                case "disablefill":
+                                    drawer.DisableFill();
+                                    break;
+                                default:
+                                    new OtherException(command + " is not a valid command");
+                                    break;
+                            }
+                        }
+                        catch (InvalidCastException ex)
+                        {
+                            // Handle the exception caused by an invalid cast
+                            throw new OtherException($"Invalid cast: {ex.Message}", ex);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle other exceptions that might occur
+                            throw new OtherException($"An error occurred: {ex.Message}", ex);
+                        }
                     }
-                    catch (InvalidCastException ex)
-                    {
-                        // Handle the exception caused by an invalid cast
-                        throw new OtherException($"Invalid cast: {ex.Message}", ex);
-                            
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle other exceptions that might occur
-                        throw new OtherException($"An error occurred: {ex.Message}", ex);
-                    }
+                    
         
                 }
                 else
@@ -231,7 +245,7 @@ namespace ASE_ProgrammingLanguage
             foreach (string line in lines)
             {
                 // Use regular expression to match command structure and variable structure
-                Match commandMatch = Regex.Match(line.Trim(), @"^(?!(endif|endloop)\s)(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
+                Match commandMatch = Regex.Match(line.Trim(), @"^(?!(endif|endloop|endmethod)\s)(?<name>\w+)(?:\s+(?<arg1>\w+)(?:,\s*(?<arg2>\w+))?)?$");
                 Match variableMatch = Regex.Match(line, @"^(?!(if|while)\s)(?<name>\w+)\s*=\s*(?<value>[^;]*)$");
                 String cArg1 = commandMatch.Groups["arg1"].Value;
                 String cArg2 = commandMatch.Groups["arg2"].Value;
@@ -412,7 +426,6 @@ namespace ASE_ProgrammingLanguage
 
 
                             case "<":
-                                //Console.WriteLine(FormatBlock(ConvertListToString(blocks[0])));
                                 // Handle less than comparison
                                 while (Convert.ToInt32(variables[variable]) < int.Parse(value))
                                 {
@@ -476,9 +489,22 @@ namespace ASE_ProgrammingLanguage
             {
                 blocks = new List<List<string>>();
             }
+            else if (AssertMethod(ConvertListToString(blocks[0])) == "true")
+            {
+                //format
+                String formattedBlock = FormatBlock(ConvertListToString(blocks[0]));
+                string[] lines = ConvertListToString(blocks[0]).Split('\n');
+                lines[0] = lines[0];
+                Match methodMatch = Regex.Match(lines[0], @"^method\s+(\w+)\s*\((.*?)\)$");
+                if (methodMatch.Success)
+                {
+                    Console.WriteLine(formattedBlock);
+                    methods.Add(CreateMethod(methodMatch.Groups[1].Value, methodMatch.Groups[2].Value, formattedBlock));
+                }
+
+            }
             else
             {
-
                 ParseCommands(ConvertListToString(blocks[0]));
             }
         
@@ -504,6 +530,29 @@ namespace ASE_ProgrammingLanguage
             }
             return returnString;
         }
+        public String AssertMethod(string block)
+        {
+            string[] lines = block.Split('\n');
+            lines[0] = lines[0].ToLower();
+
+            if (lines.Length > 0 && lines[0].Trim().StartsWith("method"))
+            {
+                Match methodMatch = Regex.Match(lines[0], @"^method\s+(\w+)\s*\((.*?)\)$");
+
+                if (methodMatch.Success)
+                {
+                    return "true";
+                }
+                else
+                {
+                    throw new OtherException("Must declare method name");
+                }
+            }
+            else
+            {
+                return "False";
+            }
+        }
         /// <summary>
         /// Asserts whether a selection statement has been entered
         /// </summary>
@@ -516,8 +565,6 @@ namespace ASE_ProgrammingLanguage
 
             if (lines.Length > 0 && lines[0].Trim().StartsWith("if"))
             {
-                
-
                 Match selectionMatch = Regex.Match(lines[0], @"^if\s+(\w+)\s+(>|<|==|!=)\s+(\w+)$");
                
                 if (selectionMatch.Success)
@@ -545,9 +592,6 @@ namespace ASE_ProgrammingLanguage
                     }
                     intVar1 = intVarValues[0];
                     intVar2 = intVarValues[1];
-
-                    /*if (variables.ContainsKey(variable))
-                    {*/
 
                         // Process the condition based on the comparison operator
                         switch (comparisonOperator.Trim())
@@ -606,11 +650,6 @@ namespace ASE_ProgrammingLanguage
                                 Console.WriteLine("Invalid comparison operator");
                                 return "NonMatch";
                         }
-                    //}
-                    /*else
-                    {
-                        return "NonVar";
-                    }*/
                 }
                 else
                 {
@@ -815,6 +854,28 @@ namespace ASE_ProgrammingLanguage
             {
                 string args = string.Join(", ", Arguments);
                 return $"{Name}({args})";
+            }
+        }
+        private Method CreateMethod(string name, string parameters, string block)
+        {
+            return MethodFactory.CreateMethod(name, parameters, block);
+        }
+        public class Method
+        {
+            public string MethodName { get; set; }
+            public string Parameters { get; set; }
+            public string Block { get; set; }
+
+            public Method(string methodName, string parameters, string block)
+            {
+                MethodName = methodName;
+                Parameters = parameters;
+                Block = block;
+            }
+            public override string ToString()
+            {
+                string args = string.Join(", ", Parameters);
+                return $"{MethodName}({args})";
             }
         }
 
